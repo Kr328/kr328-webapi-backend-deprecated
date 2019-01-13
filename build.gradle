@@ -1,0 +1,39 @@
+buildscript {
+	ext {
+		springBootVersion = '2.1.1.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.github.kr328'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	implementation.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+}
+
+dependencies {
+	//implementation('org.springframework.boot:spring-boot-starter-data-mongodb')
+	implementation('org.springframework.boot:spring-boot-starter-webflux')
+	implementation('org.springframework.boot:spring-boot-starter-websocket')
+	implementation('org.springframework.boot:spring-boot-starter-undertow')
+	implementation('com.alibaba:fastjson:1.2.54')
+	
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('io.projectreactor:reactor-test')
+}
