@@ -13,20 +13,20 @@ import java.util.HashMap;
 
 public class ShadowsocksDSubscription extends BaseSubscription {
     @Override
-    public String buildForResponse(HttpHeaders httpHeaders, Proxy[] proxies) throws BuildException {
-        HashMap<Integer , ArrayList<Proxy>> sorted = sortProxies(proxies);
+    public String buildForResponse(HttpHeaders httpHeaders, Proxy[] proxies) {
+        HashMap<Integer, ArrayList<Proxy>> sorted = sortProxies(proxies);
         StringBuilder result = new StringBuilder();
 
-        for ( ArrayList<Proxy> ps : sorted.values() )
+        for (ArrayList<Proxy> ps : sorted.values())
             result.append(buildSingleProvider(ps)).append("\n");
 
         return result.toString();
     }
 
-    private HashMap<Integer , ArrayList<Proxy>> sortProxies(Proxy[] proxies) {
-        HashMap<Integer , ArrayList<Proxy>> result = new HashMap<>();
+    private HashMap<Integer, ArrayList<Proxy>> sortProxies(Proxy[] proxies) {
+        HashMap<Integer, ArrayList<Proxy>> result = new HashMap<>();
 
-        for ( Proxy p : proxies )
+        for (Proxy p : proxies)
             result.computeIfAbsent(p.get(ProxyData.PROVIDER).hashCode(), k -> new ArrayList<>()).add(p);
 
         return result;
@@ -40,10 +40,10 @@ public class ShadowsocksDSubscription extends BaseSubscription {
 
         JSONArray servers = new JSONArray();
 
-        for ( Proxy p : proxies ) {
+        for (Proxy p : proxies) {
             GeneralProxyData general = p.require(ProxyData.GENERAL);
 
-            if ( general.getProxyType() != GeneralProxyData.PROXY_TYPE_SHADOWSOCKS )
+            if (general.getProxyType() != GeneralProxyData.PROXY_TYPE_SHADOWSOCKS)
                 continue;
 
             provider = p.require(ProxyData.PROVIDER);
@@ -51,17 +51,17 @@ public class ShadowsocksDSubscription extends BaseSubscription {
 
             JSONObject server = new JSONObject();
 
-            server.put("server" ,shadowsocks.getHost());
-            server.put("port" ,shadowsocks.getPort());
-            server.put("encryption" ,shadowsocks.getMethod());
-            server.put("password" ,shadowsocks.getPassword());
-            server.put("id" ,general.getId());
-            server.put("remarks" ,general.getName());
+            server.put("server", shadowsocks.getHost());
+            server.put("port", shadowsocks.getPort());
+            server.put("encryption", shadowsocks.getMethod());
+            server.put("password", shadowsocks.getPassword());
+            server.put("id", general.getId());
+            server.put("remarks", general.getName());
 
             ShadowsocksPluginProxyData shadowsocksPlugin = p.get(ProxyData.SHADOWSOCKS_PLUGIN);
-            if ( shadowsocksPlugin != null ) {
-                server.put("plugin" ,shadowsocksPlugin.getPlugin());
-                server.put("plugin_options" ,shadowsocksPlugin.getPluginOptions());
+            if (shadowsocksPlugin != null) {
+                server.put("plugin", shadowsocksPlugin.getPlugin());
+                server.put("plugin_options", shadowsocksPlugin.getPluginOptions());
 
                 rootPlugin = shadowsocksPlugin;
             }
@@ -69,31 +69,31 @@ public class ShadowsocksDSubscription extends BaseSubscription {
             servers.add(server);
         }
 
-        if ( provider == null )
+        if (provider == null)
             return "";
 
-        root.put("airport" ,provider.getName());
-        root.put("traffic_used" ,castByteToGibibyte(provider.getTrafficUsed()));
-        root.put("traffic_total" ,castByteToGibibyte(provider.getTrafficTotal()));
-        root.put("expiry" ,provider.getExpires() == null ? null : DATE_FORMAT_SSD.format(provider.getExpires()));
+        root.put("airport", provider.getName());
+        root.put("traffic_used", castByteToGibibyte(provider.getTrafficUsed()));
+        root.put("traffic_total", castByteToGibibyte(provider.getTrafficTotal()));
+        root.put("expiry", provider.getExpires() == null ? null : DATE_FORMAT_SSD.format(provider.getExpires()));
 
-        root.put("port" ,shadowsocks.getPort());
-        root.put("encryption" ,shadowsocks.getMethod());
-        root.put("password" ,shadowsocks.getPassword());
+        root.put("port", shadowsocks.getPort());
+        root.put("encryption", shadowsocks.getMethod());
+        root.put("password", shadowsocks.getPassword());
 
-        if ( rootPlugin != null ) {
+        if (rootPlugin != null) {
             root.put("plugin", rootPlugin.getPlugin());
             root.put("plugin_options", rootPlugin.getPluginOptions());
         }
 
-        root.put("servers" ,servers);
+        root.put("servers", servers);
 
         return "ssd://" + Base64.getUrlEncoder().encodeToString(root.toJSONString().getBytes());
     }
 
     private static float castByteToGibibyte(long b) {
-        if ( b == -1 ) return -1.0f;
-        return (float)b / 1024f / 1024f / 1024f;
+        if (b == -1) return -1.0f;
+        return (float) b / 1024f / 1024f / 1024f;
     }
 
     private static final SimpleDateFormat DATE_FORMAT_SSD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

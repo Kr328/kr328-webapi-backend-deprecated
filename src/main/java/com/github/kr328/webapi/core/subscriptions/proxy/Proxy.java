@@ -4,8 +4,10 @@ import com.github.kr328.webapi.core.subscriptions.proxy.data.ProxyData;
 
 import java.util.HashMap;
 
+@SuppressWarnings({"WeakerAccess" ,"UnusedReturnValue"})
 public class Proxy {
-    public Proxy() {}
+    public Proxy() {
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends ProxyData> T get(ProxyData.ProxyDataKey<T> key) {
@@ -14,16 +16,16 @@ public class Proxy {
 
     public <T extends ProxyData> T require(ProxyData.ProxyDataKey<T> key) {
         T result = this.get(key);
-        if ( result == null )
+        if (result == null)
             throw new IllegalStateException("Key " + key.description + " not found.");
         return result;
     }
 
-    public <T extends ProxyData> T put(ProxyData.ProxyDataKey<T> key ,T value) {
-        if ( value == null )
+    public <T extends ProxyData> T put(ProxyData.ProxyDataKey<T> key, T value) {
+        if (value == null)
             return remove(key);
 
-        values.put(key.description ,value);
+        values.put(key.description, value);
         return value;
     }
 
@@ -32,5 +34,5 @@ public class Proxy {
         return (T) values.remove(key.description);
     }
 
-    private HashMap<String , ProxyData> values = new HashMap<>();
+    private HashMap<String, ProxyData> values = new HashMap<>();
 }

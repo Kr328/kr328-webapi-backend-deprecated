@@ -6,8 +6,12 @@ public abstract class ProxyData {
     public static final ProxyDataKey<ShadowsocksProxyData> SHADOWSOCKS = new ProxyDataKey<>("shadowsocks");
     public static final ProxyDataKey<ShadowsocksPluginProxyData> SHADOWSOCKS_PLUGIN = new ProxyDataKey<>("shadowsocks_plugin");
 
+    @SuppressWarnings("unused")
     public static class ProxyDataKey<T extends ProxyData> {
-        public ProxyDataKey(String description) {this.description = description;}
+        ProxyDataKey(String description) {
+            this.description = description;
+        }
+
         public String description;
     }
 }

@@ -13,16 +13,16 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @SpringBootApplication
 public class WebApiApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(WebApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(WebApiApplication.class, args);
+    }
 
-	@Bean
-	public RouterFunction<ServerResponse> routes(ApiControllers controllers) {
-		return route()
-				.add(route(path("/surge2ssd") ,controllers.getSurge2ShadowSocks()::process))
-				.add(route(all() ,request -> ServerResponse.notFound().build()))
-				.build();
-	}
+    @Bean
+    public RouterFunction<ServerResponse> routes(ApiControllers controllers) {
+        return route()
+                .add(route(path("/surge2ssd"), controllers.getSurge2ShadowSocks()::process))
+                .add(route(all(), request -> ServerResponse.notFound().build()))
+                .build();
+    }
 }
 
