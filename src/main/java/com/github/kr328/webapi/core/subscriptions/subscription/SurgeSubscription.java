@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -19,7 +18,6 @@ public class SurgeSubscription extends BaseSubscription {
         if ( !detectSurge(lines) )
             throw new ParseException("Unsupported");
 
-        ArrayList<String> proxyLines = filterProxyLine(lines);
         List<String> trafficInfoHeader = Optional.ofNullable(httpHeaders.getValuesAsList("subscription-userinfo"))
                 .orElse(Collections.emptyList());
 
@@ -30,11 +28,22 @@ public class SurgeSubscription extends BaseSubscription {
 
         ArrayList<Proxy> result = new ArrayList<>();
 
-        for ( String line : proxyLines ) {
+        for ( String line : lines ) {
+            line = line.trim();
+
+            if ( line.isEmpty() )
+                continue;
+
+            if ( line.startsWith("//") )
+                continue;
+
+            Matcher matcher = PATTERN_SHADOWSOCKS_LINE.matcher(line);
+            if ( !matcher.matches() )
+                continue;
+
             Proxy proxy = new Proxy();
 
-            if ( !parseProxy(line ,proxy) )
-                continue;
+            parseProxy(matcher ,proxy);
 
             ProviderProxyData providerProxyData =
                     new ProviderProxyData(providerName ,trafficUsed ,trafficTotal ,new Date(0));
@@ -46,7 +55,7 @@ public class SurgeSubscription extends BaseSubscription {
         return result.toArray(new Proxy[0]);
     }
 
-    private static boolean detectSurge(String[] lines) {
+    private boolean detectSurge(String[] lines) {
         for ( String line : lines ) {
             line = line.trim();
 
@@ -68,38 +77,7 @@ public class SurgeSubscription extends BaseSubscription {
         return true; // for blank
     }
 
-    private static ArrayList<String> filterProxyLine(String[] lines) {
-        boolean in_proxy = false;
-        ArrayList<String> result = new ArrayList<>();
-
-        for ( String line : lines ) {
-            line = line.trim();
-
-            if ( line.isEmpty() )
-                continue;
-
-            if ( line.startsWith("//") || line.startsWith("#") )
-                continue;
-
-            if ( line.startsWith("[") ) {
-                in_proxy = line.equals("[Proxy]");
-                continue;
-            }
-
-            if ( !in_proxy )
-                continue;
-
-            result.add(line);
-        }
-
-        return result;
-    }
-
-    private static boolean parseProxy(String line ,Proxy proxy) {
-        Matcher matcher = PATTERN_SHADOWSOCKS_LINE.matcher(line);
-        if ( !matcher.matches() )
-            return false;
-
+    private void parseProxy(Matcher matcher ,Proxy proxy) {;
         String name = matcher.group(1);
         String host = matcher.group(2);
         String port = matcher.group(3);
@@ -114,11 +92,9 @@ public class SurgeSubscription extends BaseSubscription {
         proxy.put(ProxyData.GENERAL ,general);
         proxy.put(ProxyData.SHADOWSOCKS ,shadowsocks);
         proxy.put(ProxyData.SHADOWSOCKS_PLUGIN ,shadowsocksPlugin);
-
-        return true;
     }
 
-    private static ShadowsocksPluginProxyData parsePlugin(String[] extras) {
+    private ShadowsocksPluginProxyData parsePlugin(String[] extras) {
         TreeMap<String ,String> extrasMap = new TreeMap<>();
 
         for ( String s : extras ) {
@@ -138,7 +114,7 @@ public class SurgeSubscription extends BaseSubscription {
         return null;
     }
 
-    private static long parseUsedTraffic(List<String> headerValues) {
+    private long parseUsedTraffic(List<String> headerValues) {
         AtomicLong result = new AtomicLong(-1);
 
         headerValues.stream()
@@ -158,7 +134,7 @@ public class SurgeSubscription extends BaseSubscription {
         return result.get() == -1 ? -1 * 1024 * 1024 * 1024 : result.get() + 1 ;
     }
 
-    private static long parseTotalTraffic(List<String> headerValues) {
+    private long parseTotalTraffic(List<String> headerValues) {
         AtomicLong result = new AtomicLong(-1);
 
         headerValues.stream()

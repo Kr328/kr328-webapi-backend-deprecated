@@ -41,7 +41,8 @@ public class Surge2ShadowSocks {
                 .exchange()
                 .onErrorResume(throwable -> Mono.empty())
                 .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
-                .flatMap(clientResponse -> Mono.zip(Mono.just(HttpHeaders.writableHttpHeaders(clientResponse.headers().asHttpHeaders())) ,clientResponse.bodyToMono(String.class)))
+                .flatMap(clientResponse -> Mono.zip(Mono.just(HttpHeaders.writableHttpHeaders(clientResponse.headers().asHttpHeaders())) ,
+                        clientResponse.bodyToMono(String.class).switchIfEmpty(Mono.just(""))))
                 .map(t -> Tuples.of(t.getT1() ,parseFromRequest(t.getT1() ,t.getT2() ,name.orElse(""))))
                 .map(t -> Tuples.of(t.getT1() ,buildForResponse(t.getT1() ,t.getT2())))
                 .flatMap(p -> ServerResponse.ok().headers((headers) -> headers.setAll(p.getT1().toSingleValueMap())).body(Mono.just(p.getT2()) ,String.class))
