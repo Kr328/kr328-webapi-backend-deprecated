@@ -47,7 +47,7 @@ public class Surge2ShadowSocks {
                 .map(t -> Tuples.of(t.getT1(), parseFromRequest(t.getT1(), t.getT2(), name.orElse(""))))
                 .map(t -> Tuples.of(t.getT1(), buildForResponse(t.getT1(), t.getT2())))
                 .flatMap(p -> ServerResponse.ok().headers((headers) -> headers.setAll(p.getT1().toSingleValueMap())).body(Mono.just(p.getT2()), String.class))
-                .switchIfEmpty(ServerResponse.status(502).body(Mono.just("Upstream subscription service unreachable or timeout"), String.class))
+                .switchIfEmpty(ServerResponse.status(403).body(Mono.just("Upstream subscription service unreachable or timeout"), String.class))
                 .onErrorResume(throwable -> ServerResponse.badRequest().body(Mono.just("Conversion failure " + throwable.getCause().getClass().getSimpleName() + " " + throwable.getCause().getMessage()), String.class));
     }
 
