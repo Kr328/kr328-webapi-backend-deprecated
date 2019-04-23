@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
 
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -38,6 +39,7 @@ public class Surge2ShadowSocks {
                 .method(request.method())
                 .uri(decodedUrl)
                 .exchange()
+                .timeout(Duration.ofSeconds(30))
                 .onErrorResume(throwable -> Mono.empty())
                 .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
                 .flatMap(clientResponse -> Mono.zip(Mono.just(HttpHeaders.writableHttpHeaders(clientResponse.headers().asHttpHeaders())),

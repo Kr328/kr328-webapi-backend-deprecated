@@ -5,6 +5,7 @@ import com.github.kr328.webapi.core.subscriptions.proxy.data.*;
 import org.springframework.http.HttpHeaders;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,15 +27,24 @@ public class SurgeSubscription extends BaseSubscription {
         long trafficUsed = parseUsedTraffic(trafficInfoHeader);
         long trafficTotal = parseTotalTraffic(trafficInfoHeader);
 
+        boolean in_proxy = false;
         ArrayList<Proxy> result = new ArrayList<>();
 
-        for (String line : lines) {
+        for ( String line : lines ) {
             line = line.trim();
 
-            if (line.isEmpty())
+            if ( line.isEmpty() )
                 continue;
 
-            if (line.startsWith("//"))
+            if ( line.startsWith("//") || line.startsWith("#") )
+                continue;
+
+            if ( SET_SECTIONS_LINE.contains(line) ) {
+                in_proxy = "[Proxy]".equals(line);
+                continue;
+            }
+
+            if ( !in_proxy )
                 continue;
 
             Matcher matcher = PATTERN_SHADOWSOCKS_LINE.matcher(line);
@@ -56,25 +66,20 @@ public class SurgeSubscription extends BaseSubscription {
     }
 
     private boolean detectSurge(String[] lines) {
+        if ( lines.length == 0 )
+            return true; //For HEAD and OPTIONS Method
+
         for (String line : lines) {
             line = line.trim();
 
             if (line.isEmpty())
                 continue;
 
-            if (line.startsWith("//"))
-                continue;
-
-            if (line.startsWith("#")) {
-                if (line.startsWith("#!MANAGED-CONFIG"))
-                    return true;
-                continue;
-            }
-
-            return false;
+            if ( SET_SECTIONS_LINE.contains(line) )
+                return true;
         }
 
-        return true; // for blank
+        return false;
     }
 
     private void parseProxy(Matcher matcher, Proxy proxy) {
@@ -153,4 +158,5 @@ public class SurgeSubscription extends BaseSubscription {
     }
 
     private static final Pattern PATTERN_SHADOWSOCKS_LINE = Pattern.compile("(.*?)\\s?=\\s?custom,([0-9a-zA-Z.-]+),(\\d+),([0-9a-zA-Z.-]+),(.*?),.*?SSEncrypt\\.module,(.*)$");
+    private static final TreeSet<String> SET_SECTIONS_LINE = new TreeSet<>(Arrays.asList("[General]" ,"[Proxy]" ,"[Proxy Group]" ,"[Rule]" ,"[Header Rewrite]" ,"[URL Rewrite]"));
 }
