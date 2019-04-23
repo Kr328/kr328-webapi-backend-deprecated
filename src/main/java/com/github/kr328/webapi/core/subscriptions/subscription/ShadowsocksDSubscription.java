@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class ShadowsocksDSubscription extends BaseSubscription {
     @Override
@@ -77,7 +78,7 @@ public class ShadowsocksDSubscription extends BaseSubscription {
         root.put("airport", provider.getName());
         root.put("traffic_used", castByteToGibibyte(provider.getTrafficUsed()));
         root.put("traffic_total", castByteToGibibyte(provider.getTrafficTotal()));
-        root.put("expiry", provider.getExpires() == null ? null : DATE_FORMAT_SSD.format(provider.getExpires()));
+        Optional.ofNullable(provider.getExpires()).ifPresent(date -> root.put("expiry" ,DATE_FORMAT_SSD.format(date)));
 
         root.put("port", shadowsocks.getPort());
         root.put("encryption", shadowsocks.getMethod());
