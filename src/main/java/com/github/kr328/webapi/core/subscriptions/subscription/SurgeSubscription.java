@@ -56,7 +56,7 @@ public class SurgeSubscription extends BaseSubscription {
             parseProxy(matcher, proxy);
 
             ProviderProxyData providerProxyData =
-                    new ProviderProxyData(providerName, trafficUsed, trafficTotal, new Date(0));
+                    new ProviderProxyData(providerName, trafficUsed, trafficTotal, null);
             proxy.put(ProxyData.PROVIDER, providerProxyData);
 
             result.add(proxy);
