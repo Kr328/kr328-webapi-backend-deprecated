@@ -20,6 +20,8 @@ public class ShadowsocksDSubscription extends BaseSubscription {
         for (ArrayList<Proxy> ps : sorted.values())
             result.append(buildSingleProvider(ps)).append("\n");
 
+        httpHeaders.remove(HttpHeaders.CONTENT_DISPOSITION);
+
         return result.toString();
     }
 

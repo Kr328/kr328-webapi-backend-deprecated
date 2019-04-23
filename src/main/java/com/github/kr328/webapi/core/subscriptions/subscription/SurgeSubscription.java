@@ -83,12 +83,12 @@ public class SurgeSubscription extends BaseSubscription {
     }
 
     private void parseProxy(Matcher matcher, Proxy proxy) {
-        String name = matcher.group(1);
-        String host = matcher.group(2);
-        String port = matcher.group(3);
-        String method = matcher.group(4);
-        String password = matcher.group(5);
-        String[] extras = matcher.group(6).split(",");
+        String name = matcher.group(1).trim();
+        String host = matcher.group(2).trim();
+        String port = matcher.group(3).trim();
+        String method = matcher.group(4).trim();
+        String password = matcher.group(5).trim();
+        String[] extras = matcher.group(6).split("[,\\s]");
 
         GeneralProxyData general = new GeneralProxyData(name, name.hashCode(), GeneralProxyData.PROXY_TYPE_SHADOWSOCKS);
         ShadowsocksProxyData shadowsocks = new ShadowsocksProxyData(host, Integer.parseInt(port), method, password);
@@ -157,6 +157,6 @@ public class SurgeSubscription extends BaseSubscription {
         return result.get() == -1 ? -1 * 1024 * 1024 * 1024 : result.get() + 1;
     }
 
-    private static final Pattern PATTERN_SHADOWSOCKS_LINE = Pattern.compile("(.*?)\\s?=\\s?custom,([0-9a-zA-Z.-]+),(\\d+),([0-9a-zA-Z.-]+),(.*?),.*?SSEncrypt\\.module,(.*)$");
+    private static final Pattern PATTERN_SHADOWSOCKS_LINE = Pattern.compile("(.*?)\\s*=\\s*custom\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(\\d+)\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(.*?),.*?SSEncrypt\\.module\\s*,?(.*)$");
     private static final TreeSet<String> SET_SECTIONS_LINE = new TreeSet<>(Arrays.asList("[General]" ,"[Proxy]" ,"[Proxy Group]" ,"[Rule]" ,"[Header Rewrite]" ,"[URL Rewrite]"));
 }
