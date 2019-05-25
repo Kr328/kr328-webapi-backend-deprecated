@@ -5,7 +5,6 @@ import com.github.kr328.webapi.core.subscriptions.proxy.data.*;
 import org.springframework.http.HttpHeaders;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

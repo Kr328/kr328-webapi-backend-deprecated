@@ -1,6 +1,6 @@
 package com.github.kr328.webapi;
 
-import com.github.kr328.webapi.api.ApiControllers;
+import com.github.kr328.webapi.web.ApiControllers;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

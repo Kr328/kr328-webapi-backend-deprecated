@@ -1,4 +1,4 @@
-package com.github.kr328.webapi.api;
+package com.github.kr328.webapi.web;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.github.kr328.webapi.api;
+package com.github.kr328.webapi.web;
 
 import com.github.kr328.webapi.core.subscriptions.proxy.Proxy;
 import com.github.kr328.webapi.core.subscriptions.subscription.BaseSubscription;
