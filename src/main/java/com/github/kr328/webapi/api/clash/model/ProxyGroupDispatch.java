@@ -9,7 +9,7 @@ public class ProxyGroupDispatch {
     private String name;
     private String type;
     private String url;
-    private int interval;
+    private int interval = -1;
 
     private ProxiesFilters proxiesFilters;
     private List<String> flatProxies;
