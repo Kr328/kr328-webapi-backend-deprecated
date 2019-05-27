@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class Preprocessor {
-    private int version = 0;
+    private int version = -1;
 }
