@@ -1,6 +1,6 @@
-package com.github.kr328.webapi.core.subscriptions.subscription;
+package com.github.kr328.webapi.api.subscriptions.subscription;
 
-import com.github.kr328.webapi.core.subscriptions.proxy.Proxy;
+import com.github.kr328.webapi.api.subscriptions.proxy.Proxy;
 import org.springframework.http.HttpHeaders;
 
 public abstract class BaseSubscription {

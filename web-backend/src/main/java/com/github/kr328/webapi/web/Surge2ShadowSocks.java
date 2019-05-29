@@ -1,12 +1,13 @@
 package com.github.kr328.webapi.web;
 
-import com.github.kr328.webapi.core.subscriptions.proxy.Proxy;
-import com.github.kr328.webapi.core.subscriptions.subscription.BaseSubscription;
+import com.github.kr328.webapi.api.subscriptions.proxy.Proxy;
+import com.github.kr328.webapi.api.subscriptions.subscription.BaseSubscription;
 import com.github.kr328.webapi.tools.Subscriptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;

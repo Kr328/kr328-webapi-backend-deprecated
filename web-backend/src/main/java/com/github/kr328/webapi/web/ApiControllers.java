@@ -9,4 +9,6 @@ import org.springframework.stereotype.Component;
 public class ApiControllers {
     @Autowired
     private Surge2ShadowSocks surge2ShadowSocks;
+    @Autowired
+    private ClashPreprocess clashPreprocess;
 }

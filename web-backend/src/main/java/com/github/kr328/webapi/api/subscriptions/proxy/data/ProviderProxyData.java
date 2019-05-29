@@ -1,4 +1,4 @@
-package com.github.kr328.webapi.core.subscriptions.proxy.data;
+package com.github.kr328.webapi.api.subscriptions.proxy.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,12 @@
-package com.github.kr328.webapi.core.subscriptions.subscription;
+package com.github.kr328.webapi.api.subscriptions.subscription;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.kr328.webapi.core.subscriptions.proxy.Proxy;
-import com.github.kr328.webapi.core.subscriptions.proxy.data.*;
+import com.github.kr328.webapi.api.clash.utils.ProxyGroupDispatchLoader;
+import com.github.kr328.webapi.api.subscriptions.proxy.Proxy;
+import com.github.kr328.webapi.api.subscriptions.proxy.data.*;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class ShadowsocksDSubscription extends BaseSubscription {
             result.append(buildSingleProvider(ps)).append("\n");
 
         httpHeaders.remove(HttpHeaders.CONTENT_DISPOSITION);
+        httpHeaders.setContentType(MediaType.TEXT_PLAIN);
 
         return result.toString();
     }

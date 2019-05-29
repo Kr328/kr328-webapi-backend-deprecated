@@ -1,6 +1,6 @@
-package com.github.kr328.webapi.core.subscriptions.proxy;
+package com.github.kr328.webapi.api.subscriptions.proxy;
 
-import com.github.kr328.webapi.core.subscriptions.proxy.data.ProxyData;
+import com.github.kr328.webapi.api.subscriptions.proxy.data.ProxyData;
 
 import java.util.HashMap;
 

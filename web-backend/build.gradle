@@ -31,7 +31,4 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.alibaba:fastjson:1.2.54'
 	implementation 'org.yaml:snakeyaml:1.25-SNAPSHOT'
-	
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
 }

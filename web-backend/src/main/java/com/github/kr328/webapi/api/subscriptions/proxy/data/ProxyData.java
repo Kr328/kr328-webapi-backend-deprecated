@@ -1,4 +1,4 @@
-package com.github.kr328.webapi.core.subscriptions.proxy.data;
+package com.github.kr328.webapi.api.subscriptions.proxy.data;
 
 public abstract class ProxyData {
     public static final ProxyDataKey<GeneralProxyData> GENERAL = new ProxyDataKey<>("general");

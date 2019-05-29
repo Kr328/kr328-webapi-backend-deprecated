@@ -1,7 +1,7 @@
 package com.github.kr328.webapi.tools;
 
-import com.github.kr328.webapi.core.subscriptions.subscription.ShadowsocksDSubscription;
-import com.github.kr328.webapi.core.subscriptions.subscription.SurgeSubscription;
+import com.github.kr328.webapi.api.subscriptions.subscription.ShadowsocksDSubscription;
+import com.github.kr328.webapi.api.subscriptions.subscription.SurgeSubscription;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
