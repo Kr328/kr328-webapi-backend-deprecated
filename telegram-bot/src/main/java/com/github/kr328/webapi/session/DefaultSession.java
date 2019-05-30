@@ -3,6 +3,7 @@ package com.github.kr328.webapi.session;
 import com.github.kr328.webapi.Context;
 import com.github.kr328.webapi.i18n.I18n;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -62,12 +63,18 @@ public class DefaultSession implements ISession {
 
     @Override
     public ISession handle(Context context, AbsSender sender, CallbackQuery callbackQuery) throws TelegramApiException {
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery()
+                .setCallbackQueryId(callbackQuery.getId());
+
+        sender.execute(answerCallbackQuery);
+
         switch (callbackQuery.getData()) {
             case "generate_surge2ssd":
                 SendMessage sendMessage = new SendMessage()
                         .setChatId(callbackQuery.getMessage().getChatId())
                         .setText(I18n.get("message_reply_generate_surge2ssd"));
 
+                sender.execute(answerCallbackQuery);
                 sender.execute(sendMessage);
 
                 return new Surge2SSDSession(callbackQuery.getMessage().getChatId());
