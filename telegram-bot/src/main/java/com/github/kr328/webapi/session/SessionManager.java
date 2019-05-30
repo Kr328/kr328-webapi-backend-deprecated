@@ -1,5 +1,7 @@
 package com.github.kr328.webapi.session;
 
+import com.github.kr328.webapi.Context;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
@@ -10,9 +12,11 @@ import java.util.Optional;
 
 public class SessionManager {
     private Hashtable<String, ISession> sessions = new Hashtable<>();
-    private AbsSender sender;
+    private DefaultAbsSender sender;
+    private Context context;
 
-    public SessionManager(AbsSender sender) {
+    public SessionManager(Context context, DefaultAbsSender sender) {
+        this.context = context;
         this.sender = sender;
     }
 
@@ -22,7 +26,7 @@ public class SessionManager {
                 .or(() -> Optional.ofNullable(sessions.get("chat:" + message.getChatId())))
                 .orElse(ISession.DEFAULT);
 
-        ISession nextSession = session.handle(sender, message);
+        ISession nextSession = session.handle(context, sender, message);
         if ( nextSession != null )
             sessions.put(nextSession.getToken(), nextSession);
 
@@ -34,7 +38,7 @@ public class SessionManager {
                 .or(() -> Optional.ofNullable(sessions.get("callback:" + callbackQuery.getData()))) // user id based session
                 .orElse(ISession.DEFAULT);
 
-        ISession nextSession = session.handle(sender, callbackQuery);
+        ISession nextSession = session.handle(context, sender, callbackQuery);
         if ( nextSession != null )
             sessions.put(nextSession.getToken(), nextSession);
 

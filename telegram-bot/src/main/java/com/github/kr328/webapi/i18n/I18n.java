@@ -8,7 +8,7 @@ public class I18n {
     private static ThreadLocal<ResourceBundle> currentLanguage = new ThreadLocal<>();
     private static Hashtable<Locale, ResourceBundle> cache = new Hashtable<>();
 
-    public static String text(String t) {
+    public static String get(String t) {
         return Optional.ofNullable(currentLanguage.get()).map(r -> r.getString(t)).orElseGet(() -> defaultLanguage.getString(t));
     }
 
@@ -19,12 +19,21 @@ public class I18n {
             currentLanguage.set(cache.computeIfAbsent(Locale.forLanguageTag(locale), o -> ResourceBundle.getBundle(I18n.class.getPackageName() + ".i18n", Locale.forLanguageTag(locale))));
     }
 
-    public static Thread thread(Runnable runnable) {
-        ResourceBundle parent = currentLanguage.get();
+    public static Lazy lazy() {
+        return new Lazy(currentLanguage.get());
+    }
 
-        return new Thread(() -> {
-            currentLanguage.set(parent);
-            runnable.run();
-        });
+    public static class Lazy {
+        private ResourceBundle resourceBundle;
+        private Lazy(ResourceBundle resourceBundle) {
+            this.resourceBundle = resourceBundle;
+        }
+
+        public String get(String text) {
+            return Optional
+                    .ofNullable(resourceBundle)
+                    .map(r -> r.getString(text))
+                    .orElseGet(() -> defaultLanguage.getString(text));
+        }
     }
 }

@@ -1,17 +1,16 @@
 package com.github.kr328.webapi.session;
 
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import com.github.kr328.webapi.Context;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.function.Function;
-
 public interface ISession {
     ISession DEFAULT = new DefaultSession();
 
     String getToken();
-    ISession handle(AbsSender sender ,Message message) throws TelegramApiException;
-    ISession handle(AbsSender sender , CallbackQuery callbackQuery) throws TelegramApiException;
+    ISession handle(Context context, DefaultAbsSender sender , Message message) throws TelegramApiException;
+    ISession handle(Context context, AbsSender sender ,CallbackQuery callbackQuery) throws TelegramApiException;
 }

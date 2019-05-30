@@ -16,5 +16,6 @@ jar {
 
 dependencies {
     compile 'org.telegram:telegrambots:4.2'
+    compile 'com.alibaba:fastjson:1.2.58'
     compileOnly 'org.projectlombok:lombok:1.18.6'
 }

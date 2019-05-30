@@ -1,7 +1,10 @@
 package com.github.kr328.webapi.session;
 
+import com.github.kr328.webapi.Context;
 import com.github.kr328.webapi.i18n.I18n;
+import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -9,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -19,7 +23,7 @@ public class DefaultSession implements ISession {
     }
 
     @Override
-    public ISession handle(AbsSender sender, Message message) throws TelegramApiException {
+    public ISession handle(Context context, DefaultAbsSender sender, Message message) throws TelegramApiException {
         if ( !message.hasText() )
             return null;
 
@@ -35,16 +39,16 @@ public class DefaultSession implements ISession {
                         .setKeyboard(Arrays.asList(
                                 Collections.singletonList(new InlineKeyboardButton()
                                         .setCallbackData("generate_surge2ssd")
-                                        .setText(I18n.text("message_button_generate_surge2ssd"))) ,
+                                        .setText(I18n.get("message_button_generate_surge2ssd"))) ,
                                 Collections.singletonList(new InlineKeyboardButton()
                                         .setCallbackData("generate_preclash")
-                                        .setText("hhh"))
+                                        .setText(I18n.get("message_button_generate_preclash")))
                         ));
                 SendMessage send = new SendMessage()
                         .setChatId(message.getChatId())
                         .enableHtml(true)
                         .enableMarkdown(true)
-                        .setText(I18n.text("message_reply_user_start"))
+                        .setText(I18n.get("message_reply_user_start"))
                         .setReplyMarkup(markup);
 
                 sender.execute(send);
@@ -54,16 +58,45 @@ public class DefaultSession implements ISession {
     }
 
     @Override
-    public ISession handle(AbsSender sender, CallbackQuery callbackQuery) throws TelegramApiException {
+    public ISession handle(Context context, AbsSender sender, CallbackQuery callbackQuery) throws TelegramApiException {
         switch (callbackQuery.getData()) {
             case "generate_surge2ssd":
                 SendMessage sendMessage = new SendMessage()
                         .setChatId(callbackQuery.getMessage().getChatId())
-                        .setText(I18n.text("message_reply_generate_surge2ssd"));
+                        .setText(I18n.get("message_reply_generate_surge2ssd"));
 
                 sender.execute(sendMessage);
 
                 return new Surge2SSDSession(callbackQuery.getMessage().getChatId());
+            case "generate_preclash":
+                SendMessage clashSend = new SendMessage()
+                        .setChatId(callbackQuery.getMessage().getChatId())
+                        .enableMarkdown(true)
+                        .setText(I18n.get("message_reply_generate_preclash_file"));
+
+                sender.execute(clashSend);
+
+                return new ClashSession(callbackQuery.getMessage().getChatId());
+
+            case "delete_preclash_data":
+                I18n.Lazy lazy = I18n.lazy();
+
+                new Thread(() -> {
+                    try {
+                        context.getStoreManager().delete(callbackQuery.getFrom().getId());
+                    } catch (IOException ignored) {}
+
+                    try {
+                        EditMessageText text = new EditMessageText()
+                                .setMessageId(callbackQuery.getMessage().getMessageId())
+                                .setText(lazy.get("message_reply_delete_preclash"))
+                                .setChatId(callbackQuery.getMessage().getChatId());
+
+                        sender.execute(text);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
         }
         return null;
     }
