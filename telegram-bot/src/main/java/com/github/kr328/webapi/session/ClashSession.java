@@ -22,8 +22,6 @@ import org.telegram.telegrambots.meta.updateshandlers.DownloadFileCallback;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 public class ClashSession implements ISession {
@@ -42,7 +40,7 @@ public class ClashSession implements ISession {
     public ISession handle(Context context, DefaultAbsSender sender, Message message) throws TelegramApiException {
         Document document = message.getDocument();
 
-        if ( document == null ) {
+        if (document == null) {
             SendMessage sendMessage = new SendMessage()
                     .setChatId(message.getChatId())
                     .setText(I18n.get("message_reply_invalid_file"));
@@ -52,7 +50,7 @@ public class ClashSession implements ISession {
             return null;
         }
 
-        if ( document.getFileSize() > 1024 * 1024 ) {
+        if (document.getFileSize() > 1024 * 1024) {
             SendMessage sendMessage = new SendMessage()
                     .setChatId(message.getChatId())
                     .setText(I18n.get("message_reply_large_file"));
@@ -111,7 +109,7 @@ public class ClashSession implements ISession {
 
                         @Override
                         public void onException(File file, Exception exception) {
-                             sentCallback.onException(method, exception);
+                            sentCallback.onException(method, exception);
                         }
                     });
                 } catch (TelegramApiException e) {

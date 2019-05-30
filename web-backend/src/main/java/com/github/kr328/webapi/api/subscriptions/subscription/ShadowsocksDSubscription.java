@@ -2,7 +2,6 @@ package com.github.kr328.webapi.api.subscriptions.subscription;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.kr328.webapi.api.clash.utils.ProxyGroupDispatchLoader;
 import com.github.kr328.webapi.api.subscriptions.proxy.Proxy;
 import com.github.kr328.webapi.api.subscriptions.proxy.data.*;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +14,13 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class ShadowsocksDSubscription extends BaseSubscription {
+    private static final SimpleDateFormat DATE_FORMAT_SSD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    private static float castByteToGibibyte(long b) {
+        if (b == -1) return -1.0f;
+        return (float) b / 1024f / 1024f / 1024f;
+    }
+
     @Override
     public String buildForResponse(HttpHeaders httpHeaders, Proxy[] proxies) {
         HashMap<Integer, ArrayList<Proxy>> sorted = sortProxies(proxies);
@@ -81,7 +87,7 @@ public class ShadowsocksDSubscription extends BaseSubscription {
         root.put("airport", provider.getName());
         root.put("traffic_used", castByteToGibibyte(provider.getTrafficUsed()));
         root.put("traffic_total", castByteToGibibyte(provider.getTrafficTotal()));
-        Optional.ofNullable(provider.getExpires()).ifPresent(date -> root.put("expiry" ,DATE_FORMAT_SSD.format(date)));
+        Optional.ofNullable(provider.getExpires()).ifPresent(date -> root.put("expiry", DATE_FORMAT_SSD.format(date)));
 
         root.put("port", shadowsocks.getPort());
         root.put("encryption", shadowsocks.getMethod());
@@ -96,11 +102,4 @@ public class ShadowsocksDSubscription extends BaseSubscription {
 
         return "ssd://" + Base64.getUrlEncoder().encodeToString(root.toJSONString().getBytes());
     }
-
-    private static float castByteToGibibyte(long b) {
-        if (b == -1) return -1.0f;
-        return (float) b / 1024f / 1024f / 1024f;
-    }
-
-    private static final SimpleDateFormat DATE_FORMAT_SSD = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 }

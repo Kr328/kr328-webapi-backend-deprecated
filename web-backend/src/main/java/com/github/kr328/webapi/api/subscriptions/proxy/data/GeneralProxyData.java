@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class GeneralProxyData extends ProxyData {
+    public static final int PROXY_TYPE_NONE = 0;
+    public static final int PROXY_TYPE_SHADOWSOCKS = 1;
     private String name;
     private int id;
     private int proxyType;
-
-    public static final int PROXY_TYPE_NONE = 0;
-    public static final int PROXY_TYPE_SHADOWSOCKS = 1;
 }

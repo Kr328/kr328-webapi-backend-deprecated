@@ -24,11 +24,11 @@ public class DefaultSession implements ISession {
 
     @Override
     public ISession handle(Context context, DefaultAbsSender sender, Message message) throws TelegramApiException {
-        if ( !message.hasText() )
+        if (!message.hasText())
             return null;
 
         String text = message.getText();
-        if ( !text.startsWith("!") && !text.startsWith("/"))
+        if (!text.startsWith("!") && !text.startsWith("/"))
             return null;
 
         String command = text.substring(1);
@@ -39,7 +39,7 @@ public class DefaultSession implements ISession {
                         .setKeyboard(Arrays.asList(
                                 Collections.singletonList(new InlineKeyboardButton()
                                         .setCallbackData("generate_surge2ssd")
-                                        .setText(I18n.get("message_button_generate_surge2ssd"))) ,
+                                        .setText(I18n.get("message_button_generate_surge2ssd"))),
                                 Collections.singletonList(new InlineKeyboardButton()
                                         .setCallbackData("generate_preclash")
                                         .setText(I18n.get("message_button_generate_preclash")))
@@ -84,7 +84,8 @@ public class DefaultSession implements ISession {
                 new Thread(() -> {
                     try {
                         context.getStoreManager().delete(callbackQuery.getFrom().getId());
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
 
                     try {
                         EditMessageText text = new EditMessageText()

@@ -4,8 +4,10 @@ import com.github.kr328.webapi.api.subscriptions.proxy.data.ProxyData;
 
 import java.util.HashMap;
 
-@SuppressWarnings({"WeakerAccess" ,"UnusedReturnValue"})
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
 public class Proxy {
+    private HashMap<String, ProxyData> values = new HashMap<>();
+
     public Proxy() {
     }
 
@@ -33,6 +35,4 @@ public class Proxy {
     public <T extends ProxyData> T remove(ProxyData.ProxyDataKey<T> key) {
         return (T) values.remove(key.description);
     }
-
-    private HashMap<String, ProxyData> values = new HashMap<>();
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.CompletableFuture;
@@ -31,14 +30,16 @@ public class FileUtils {
 
         @Override
         public void completed(Integer result, AsynchronousFileChannel asynchronousFileChannel) {
-            if ( result >= 0 ) {
+            if (result >= 0) {
                 data.append(new String(buffer.array(), 0, result));
                 buffer.clear();
                 position += result;
-                asynchronousFileChannel.read(buffer, position ,asynchronousFileChannel, this);
-            }
-            else {
-                try {asynchronousFileChannel.close();} catch (IOException ignored) {}
+                asynchronousFileChannel.read(buffer, position, asynchronousFileChannel, this);
+            } else {
+                try {
+                    asynchronousFileChannel.close();
+                } catch (IOException ignored) {
+                }
 
                 complete(data.toString());
             }
@@ -48,7 +49,10 @@ public class FileUtils {
         public void failed(Throwable throwable, AsynchronousFileChannel asynchronousFileChannel) {
             completeExceptionally(throwable);
 
-            try {asynchronousFileChannel.close();} catch (IOException ignored) {}
+            try {
+                asynchronousFileChannel.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 }

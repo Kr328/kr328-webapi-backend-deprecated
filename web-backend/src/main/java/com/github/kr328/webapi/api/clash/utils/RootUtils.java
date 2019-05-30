@@ -14,16 +14,19 @@ public class RootUtils {
         Constructor constructor = new Constructor(ClashPreprocessorRoot.class);
 
         constructor.setPropertyUtils(new PropertyUtils() {
-            {setSkipMissingProperties(true);}
+            {
+                setSkipMissingProperties(true);
+            }
+
             @Override
             public Property getProperty(Class<?> type, String name) {
                 StringBuilder result = new StringBuilder();
-                for ( String s : name.split("-+") ) {
+                for (String s : name.split("-+")) {
                     char[] cs = s.toCharArray();
-                    if ( cs.length > 0 ) cs[0] = Character.toUpperCase(cs[0]);
+                    if (cs.length > 0) cs[0] = Character.toUpperCase(cs[0]);
                     result.append(cs);
                 }
-                if ( result.length() > 0 ) result.setCharAt(0 ,Character.toLowerCase(result.charAt(0)));
+                if (result.length() > 0) result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
                 return super.getProperty(type, result.toString());
             }
         });
@@ -37,16 +40,19 @@ public class RootUtils {
         Constructor constructor = new Constructor(ClashRoot.class);
 
         constructor.setPropertyUtils(new PropertyUtils() {
-            {setSkipMissingProperties(true);}
+            {
+                setSkipMissingProperties(true);
+            }
+
             @Override
             public Property getProperty(Class<?> type, String name) {
                 StringBuilder result = new StringBuilder();
-                for ( String s : name.split("-+") ) {
+                for (String s : name.split("-+")) {
                     char[] cs = s.toCharArray();
-                    if ( cs.length > 0 ) cs[0] = Character.toUpperCase(cs[0]);
+                    if (cs.length > 0) cs[0] = Character.toUpperCase(cs[0]);
                     result.append(cs);
                 }
-                if ( result.length() > 0 ) result.setCharAt(0 ,Character.toLowerCase(result.charAt(0)));
+                if (result.length() > 0) result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
                 return super.getProperty(type, result.toString());
             }
         });

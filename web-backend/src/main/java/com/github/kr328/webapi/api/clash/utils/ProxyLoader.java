@@ -16,7 +16,7 @@ public class ProxyLoader {
             case "url":
                 String url = Optional.ofNullable(source.getUrl()).map(String::trim).orElse("");
 
-                if ( !url.startsWith("http://") && !url.startsWith("https://") )
+                if (!url.startsWith("http://") && !url.startsWith("https://"))
                     return Flux.error(new ProxySourceException("Invalid url " + url));
 
                 return WebClient.create()
@@ -30,7 +30,7 @@ public class ProxyLoader {
                         .map(RootUtils::loadClashRoot)
                         .flatMapIterable(ClashRoot::getProxy);
             case "plain":
-                if ( source.getData() == null )
+                if (source.getData() == null)
                     return Flux.error(new ProxySourceException("Empty data"));
                 return Flux.just(source.getData());
             default:

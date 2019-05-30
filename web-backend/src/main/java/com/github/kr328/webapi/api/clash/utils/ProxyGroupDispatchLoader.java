@@ -8,18 +8,13 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class ProxyGroupDispatchLoader {
-    @Data
-    public static class Metadata {
-        private ProxyGroupDispatch dispatch;
-        private Pattern whitePattern = PATTERN_MATCHES_ANY;
-        private Pattern blackPattern = PATTERN_MATCHES_NONE;
-        private ArrayList<String> proxies = new ArrayList<>();
-    }
+    private static final Pattern PATTERN_MATCHES_ANY = Pattern.compile(".*");
+    private static final Pattern PATTERN_MATCHES_NONE = Pattern.compile("");
 
     public static List<Metadata> load(Collection<ProxyGroupDispatch> dispatches) {
         ArrayList<Metadata> result = new ArrayList<>();
 
-        for ( ProxyGroupDispatch dispatch : dispatches ) {
+        for (ProxyGroupDispatch dispatch : dispatches) {
             Metadata metadata = new Metadata();
 
             metadata.dispatch = dispatch;
@@ -45,13 +40,18 @@ public class ProxyGroupDispatchLoader {
                     Optional.ofNullable(m.dispatch.getName()).ifPresent(n -> r.put("name", n));
                     Optional.ofNullable(m.dispatch.getType()).ifPresent(t -> r.put("type", t));
                     Optional.ofNullable(m.dispatch.getUrl()).ifPresent(u -> r.put("url", u));
-                    if ( m.dispatch.getInterval() != -1 ) r.put("interval", m.dispatch.getInterval());
+                    if (m.dispatch.getInterval() != -1) r.put("interval", m.dispatch.getInterval());
                     r.put("proxies", m.proxies);
 
                     return r;
                 });
     }
 
-    private static final Pattern PATTERN_MATCHES_ANY = Pattern.compile(".*");
-    private static final Pattern PATTERN_MATCHES_NONE = Pattern.compile("");
+    @Data
+    public static class Metadata {
+        private ProxyGroupDispatch dispatch;
+        private Pattern whitePattern = PATTERN_MATCHES_ANY;
+        private Pattern blackPattern = PATTERN_MATCHES_NONE;
+        private ArrayList<String> proxies = new ArrayList<>();
+    }
 }

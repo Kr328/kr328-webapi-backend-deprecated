@@ -7,7 +7,6 @@ import com.github.kr328.webapi.utils.RandomUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class StoreManager {
@@ -21,7 +20,7 @@ public class StoreManager {
         Metadata metadata = new Metadata(username, userId, messageId, RandomUtils.randomSecret());
         String userIdString = String.valueOf(userId);
 
-        Files.createDirectories(Paths.get(dataPath,userIdString));
+        Files.createDirectories(Paths.get(dataPath, userIdString));
         Files.copy(dataFile.toPath(), Paths.get(dataPath, userIdString, "data.yml"), StandardCopyOption.REPLACE_EXISTING);
         Files.delete(dataFile.toPath());
         Files.writeString(Paths.get(dataPath, userIdString, "metadata.json"), JSONObject.toJSONString(metadata), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);

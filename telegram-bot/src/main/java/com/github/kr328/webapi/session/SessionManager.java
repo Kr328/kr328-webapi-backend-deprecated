@@ -4,7 +4,6 @@ import com.github.kr328.webapi.Context;
 import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.Hashtable;
@@ -27,7 +26,7 @@ public class SessionManager {
                 .orElse(ISession.DEFAULT);
 
         ISession nextSession = session.handle(context, sender, message);
-        if ( nextSession != null )
+        if (nextSession != null)
             sessions.put(nextSession.getToken(), nextSession);
 
         sessions.remove(session.getToken());
@@ -39,7 +38,7 @@ public class SessionManager {
                 .orElse(ISession.DEFAULT);
 
         ISession nextSession = session.handle(context, sender, callbackQuery);
-        if ( nextSession != null )
+        if (nextSession != null)
             sessions.put(nextSession.getToken(), nextSession);
 
         sessions.remove(session.getToken());

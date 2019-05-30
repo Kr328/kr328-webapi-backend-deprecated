@@ -1,7 +1,9 @@
 package com.github.kr328.webapi.i18n;
 
-import javax.annotation.Resource;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class I18n {
     private static final ResourceBundle defaultLanguage = ResourceBundle.getBundle(I18n.class.getPackageName() + ".i18n");
@@ -13,7 +15,7 @@ public class I18n {
     }
 
     public static void setCurrentLanguage(String locale) {
-        if ( locale == null )
+        if (locale == null)
             currentLanguage.set(null);
         else
             currentLanguage.set(cache.computeIfAbsent(Locale.forLanguageTag(locale), o -> ResourceBundle.getBundle(I18n.class.getPackageName() + ".i18n", Locale.forLanguageTag(locale))));
@@ -25,6 +27,7 @@ public class I18n {
 
     public static class Lazy {
         private ResourceBundle resourceBundle;
+
         private Lazy(ResourceBundle resourceBundle) {
             this.resourceBundle = resourceBundle;
         }

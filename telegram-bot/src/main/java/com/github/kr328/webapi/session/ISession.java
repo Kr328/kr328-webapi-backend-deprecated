@@ -11,6 +11,8 @@ public interface ISession {
     ISession DEFAULT = new DefaultSession();
 
     String getToken();
-    ISession handle(Context context, DefaultAbsSender sender , Message message) throws TelegramApiException;
-    ISession handle(Context context, AbsSender sender ,CallbackQuery callbackQuery) throws TelegramApiException;
+
+    ISession handle(Context context, DefaultAbsSender sender, Message message) throws TelegramApiException;
+
+    ISession handle(Context context, AbsSender sender, CallbackQuery callbackQuery) throws TelegramApiException;
 }

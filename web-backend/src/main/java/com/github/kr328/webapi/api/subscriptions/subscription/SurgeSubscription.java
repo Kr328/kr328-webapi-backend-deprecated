@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class SurgeSubscription extends BaseSubscription {
+    private static final Pattern PATTERN_SHADOWSOCKS_LINE = Pattern.compile("(.*?)\\s*=\\s*custom\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(\\d+)\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(.*?),.*?SSEncrypt\\.module\\s*,?(.*)$");
+    private static final TreeSet<String> SET_SECTIONS_LINE = new TreeSet<>(Arrays.asList("[General]", "[Proxy]", "[Proxy Group]", "[Rule]", "[Header Rewrite]", "[URL Rewrite]"));
+
     @Override
     public Proxy[] parseFromRequest(HttpHeaders httpHeaders, String body) throws ParseException {
         String[] lines = body.split("[\\n\\t]");
@@ -29,21 +32,21 @@ public class SurgeSubscription extends BaseSubscription {
         boolean in_proxy = false;
         ArrayList<Proxy> result = new ArrayList<>();
 
-        for ( String line : lines ) {
+        for (String line : lines) {
             line = line.trim();
 
-            if ( line.isEmpty() )
+            if (line.isEmpty())
                 continue;
 
-            if ( line.startsWith("//") || line.startsWith("#") )
+            if (line.startsWith("//") || line.startsWith("#"))
                 continue;
 
-            if ( SET_SECTIONS_LINE.contains(line) ) {
+            if (SET_SECTIONS_LINE.contains(line)) {
                 in_proxy = "[Proxy]".equals(line);
                 continue;
             }
 
-            if ( !in_proxy )
+            if (!in_proxy)
                 continue;
 
             Matcher matcher = PATTERN_SHADOWSOCKS_LINE.matcher(line);
@@ -65,7 +68,7 @@ public class SurgeSubscription extends BaseSubscription {
     }
 
     private boolean detectSurge(String[] lines) {
-        if ( lines.length == 0 )
+        if (lines.length == 0)
             return true; //For HEAD and OPTIONS Method
 
         for (String line : lines) {
@@ -74,7 +77,7 @@ public class SurgeSubscription extends BaseSubscription {
             if (line.isEmpty())
                 continue;
 
-            if ( SET_SECTIONS_LINE.contains(line) )
+            if (SET_SECTIONS_LINE.contains(line))
                 return true;
         }
 
@@ -155,7 +158,4 @@ public class SurgeSubscription extends BaseSubscription {
 
         return result.get() == -1 ? -1 * 1024 * 1024 * 1024 : result.get() + 1;
     }
-
-    private static final Pattern PATTERN_SHADOWSOCKS_LINE = Pattern.compile("(.*?)\\s*=\\s*custom\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(\\d+)\\s*,\\s*([0-9a-zA-Z.-]+)\\s*,\\s*(.*?),.*?SSEncrypt\\.module\\s*,?(.*)$");
-    private static final TreeSet<String> SET_SECTIONS_LINE = new TreeSet<>(Arrays.asList("[General]" ,"[Proxy]" ,"[Proxy Group]" ,"[Rule]" ,"[Header Rewrite]" ,"[URL Rewrite]"));
 }

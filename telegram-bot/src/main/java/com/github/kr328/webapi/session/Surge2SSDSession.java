@@ -28,7 +28,7 @@ public class Surge2SSDSession implements ISession {
     public ISession handle(Context context, DefaultAbsSender sender, Message message) throws TelegramApiException {
         String url = message.getText().trim();
 
-        if ( !url.startsWith("http://") && !url.startsWith("https://") ) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             SendMessage reply = new SendMessage()
                     .setChatId(message.getChatId())
                     .setText(I18n.get("message_reply_invalid_surge_url"));

@@ -8,10 +8,10 @@ public abstract class ProxyData {
 
     @SuppressWarnings("unused")
     public static class ProxyDataKey<T extends ProxyData> {
+        public String description;
+
         ProxyDataKey(String description) {
             this.description = description;
         }
-
-        public String description;
     }
 }

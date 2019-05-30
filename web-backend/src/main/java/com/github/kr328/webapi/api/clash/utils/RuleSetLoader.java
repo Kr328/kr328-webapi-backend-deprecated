@@ -7,19 +7,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class RuleSetLoader {
     public static Flux<String> load(RuleSet set) {
-        if ( !"url".equals(set.getType()) )
+        if (!"url".equals(set.getType()))
             return Flux.error(new RuleSetException("Unsupported type " + set.getType()));
 
         String url = Optional.ofNullable(set.getUrl()).map(String::trim).orElse("");
-        if ( !url.startsWith("https://") && !url.startsWith("http://") )
+        if (!url.startsWith("https://") && !url.startsWith("http://"))
             return Flux.error(new RuleSetException("Unsupported url " + url));
 
         HashMap<String, String> target = new HashMap<>();
@@ -41,8 +39,8 @@ public class RuleSetLoader {
                 .map(RootUtils::loadClashRoot)
                 .flatMapIterable(ClashRoot::getRule)
                 .map(s -> s.split(",+"))
-                .filter(ss -> ss.length > 1 )
-                .doOnNext(ss -> Optional.ofNullable(target.get(ss[ss.length-1])).ifPresent(m -> ss[ss.length-1] = m))
+                .filter(ss -> ss.length > 1)
+                .doOnNext(ss -> Optional.ofNullable(target.get(ss[ss.length - 1])).ifPresent(m -> ss[ss.length - 1] = m))
                 .map(ss -> String.join(",", ss));
     }
 }
