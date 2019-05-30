@@ -34,7 +34,7 @@ public class WebApiApplication {
     public RouterFunction<ServerResponse> routes(ApiControllers controllers) {
         return route()
                 .add(route(path("/surge2ssd"), controllers.getSurge2ShadowSocks()::process))
-                .add(route(GET("/preclash/{id}"), controllers.getClashPreprocess()::handle))
+                .add(route(GET("/preclash/{userId}/{secret}"), controllers.getClashPreprocess()::handle))
                 .add(route(all(), request -> ServerResponse.notFound().build()))
                 .build();
     }
