@@ -42,7 +42,10 @@ public class DefaultSession implements ISession {
                                         .setText(I18n.get("message_button_generate_surge2ssd"))),
                                 Collections.singletonList(new InlineKeyboardButton()
                                         .setCallbackData("generate_preclash")
-                                        .setText(I18n.get("message_button_generate_preclash")))
+                                        .setText(I18n.get("message_button_generate_preclash"))),
+                                Collections.singletonList(new InlineKeyboardButton()
+                                        .setCallbackData("join_feedback_group")
+                                        .setText(I18n.get("message_button_join_group")))
                         ));
                 SendMessage send = new SendMessage()
                         .setChatId(message.getChatId())
@@ -98,7 +101,15 @@ public class DefaultSession implements ISession {
                         e.printStackTrace();
                     }
                 }).start();
+                break;
+            case "join_feedback_group":
+                SendMessage message = new SendMessage()
+                        .setChatId(callbackQuery.getMessage().getChatId())
+                        .setText(String.format(I18n.get("message_reply_group_link"), context.getGroupLink()));
+
+                sender.execute(message);
         }
+
         return null;
     }
 }

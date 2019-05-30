@@ -14,13 +14,11 @@ public class Kr328TelegramBot extends TelegramLongPollingBot {
     private SessionManager sessionManager;
     private String username;
     private String token;
-    private Context context;
 
-    public Kr328TelegramBot(String username, String token, String dataPath) {
+    public Kr328TelegramBot(String username, String token, String dataPath, String groupLink) {
         this.username = username;
         this.token = token;
-        this.context = new Context(new StoreManager(dataPath));
-        this.sessionManager = new SessionManager(context, this);
+        this.sessionManager = new SessionManager(new Context(new StoreManager(dataPath), groupLink), this);
     }
 
     public static void main(String[] args) throws TelegramApiRequestException {
@@ -29,13 +27,14 @@ public class Kr328TelegramBot extends TelegramLongPollingBot {
         String username = System.getenv("BOT_USERNAME");
         String token = System.getenv("BOT_TOKEN");
         String dataPath = System.getenv("BOT_DATA_PATH");
+        String groupLink = System.getenv("BOT_GROUP_LINK");
 
-        if (username == null || token == null || dataPath == null)
-            throw new Error("Invalid username ,token or data path");
+        if (username == null || token == null || dataPath == null || groupLink == null )
+            throw new Error("Invalid username || token || data path || group link");
 
         TelegramBotsApi botsApi = new TelegramBotsApi();
 
-        botsApi.registerBot(new Kr328TelegramBot(username, token, dataPath));
+        botsApi.registerBot(new Kr328TelegramBot(username, token, dataPath, groupLink));
     }
 
     @Override

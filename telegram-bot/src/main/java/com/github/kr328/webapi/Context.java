@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Context {
     private StoreManager storeManager;
+    private String groupLink;
 }
