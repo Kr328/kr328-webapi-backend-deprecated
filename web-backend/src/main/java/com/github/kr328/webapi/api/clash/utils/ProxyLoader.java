@@ -23,9 +23,9 @@ public class ProxyLoader {
                         .get()
                         .uri(url)
                         .header("Referer", "https://webapi.kr328.app/preclash")
-                        .header("Kr328WebAPIName", "preclash")
                         .exchange()
                         .timeout(Duration.ofSeconds(30))
+                        .filter(c -> c.statusCode().is2xxSuccessful())
                         .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
                         .map(RootUtils::loadClashRoot)
                         .flatMapIterable(ClashRoot::getProxy);

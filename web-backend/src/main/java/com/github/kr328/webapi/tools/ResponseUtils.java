@@ -17,7 +17,7 @@ public class ResponseUtils {
         return Mono.defer(() -> ServerResponse.status(httpCode).body(
                 Mono.just(new Yaml(new Representer(){{addClassTag(ErrorModel.class, Tag.MAP);}})
                         .dumpAsMap(Collections.singletonMap("error", new ErrorModel(code,
-                                Optional.ofNullable(throwable).map(Throwable::getMessage).orElse("unknown"))))), String.class));
+                                Optional.ofNullable(throwable).map(Throwable::getMessage).orElse("error_unknown"))))), String.class));
     }
 
     public static Mono<ServerResponse> yamlError(int httpCode, String code) {

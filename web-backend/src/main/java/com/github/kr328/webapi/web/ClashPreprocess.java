@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Controller
@@ -56,11 +57,11 @@ public class ClashPreprocess {
                 .onErrorResume(IOException.class, th -> ResponseUtils.yamlError(404, "error_config_not_found", th))
                 .onErrorResume(YAMLException.class, th -> ResponseUtils.yamlError(403, "error_invalid_config", th))
                 .onErrorResume(DispatcherException.class, th -> ResponseUtils.yamlError(403, "error_invalid_dispatcher", th))
-                .onErrorResume(PreprocessorException.class, th -> ResponseUtils.yamlError(403, "invalid_preprocessor", th))
-                .onErrorResume(ProxySourceException.class, th -> ResponseUtils.yamlError(403, "invalid_proxy_source", th))
-                .onErrorResume(RuleSetException.class, th -> ResponseUtils.yamlError(403, "invalid_rule_set", th))
-                .onErrorResume(WebClientException.class, th -> ResponseUtils.yamlError(403, "download_from_upstream_failure", th))
-                .onErrorResume(throwable -> ResponseUtils.yamlError(403, "error_unknown"));
+                .onErrorResume(PreprocessorException.class, th -> ResponseUtils.yamlError(403, "error_invalid_preprocessor", th))
+                .onErrorResume(ProxySourceException.class, th -> ResponseUtils.yamlError(403, "error_invalid_proxy_source", th))
+                .onErrorResume(RuleSetException.class, th -> ResponseUtils.yamlError(403, "error_invalid_rule_set", th))
+                .onErrorResume(WebClientException.class, th -> ResponseUtils.yamlError(403, "error_download_from_upstream_failure", th))
+                .onErrorResume(throwable -> ResponseUtils.yamlError(403,"error_unknown", throwable));
     }
 
     @Data
