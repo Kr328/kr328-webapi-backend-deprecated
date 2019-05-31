@@ -2,6 +2,7 @@ package com.github.kr328.webapi.tools;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 public class ResponseUtils {
     public static Mono<ServerResponse> yamlError(int httpCode, String code, Throwable throwable) {
-        return Mono.defer(() -> ServerResponse.status(httpCode).body(
+        return Mono.defer(() -> ServerResponse.status(httpCode).contentType(MediaType.TEXT_PLAIN).body(
                 Mono.just(new Yaml(new Representer(){{addClassTag(ErrorModel.class, Tag.MAP);}})
                         .dumpAsMap(Collections.singletonMap("error", new ErrorModel(code,
                                 Optional.ofNullable(throwable).map(Throwable::getMessage).orElse("error_unknown"))))), String.class));
