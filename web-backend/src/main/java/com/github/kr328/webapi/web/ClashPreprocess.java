@@ -47,16 +47,16 @@ public class ClashPreprocess {
         if (limiter.note(userId))
             return ResponseUtils.yamlError(400, "error_burst");
 
-        final String[] filename = {"config"};
-
         return FileUtils.readLines(Paths.get(externalConfigure.getDataPath(), userId, "metadata.json"))
                 .map(s -> JSONObject.parseObject(s, MetadataModel.class))
                 .filter(metadataModel -> metadataModel.getSecret().equals(secret))
                 .switchIfEmpty(Mono.error(new FileNotFoundException()))
-                .doOnNext(m -> filename[0] = m.getUsername())
-                .flatMap(s -> FileUtils.readLines(Paths.get(externalConfigure.getDataPath(), userId, "data.yml")))
-                .flatMap(ClashPreprocessor::process)
-                .flatMap(result -> ServerResponse.ok().contentType(MediaType.TEXT_PLAIN).headers(h -> h.setContentDispositionFormData("attachment", filename[0] + ".yml")).body(Mono.just(result), String.class))
+                .zipWhen(m -> FileUtils.readLines(Paths.get(externalConfigure.getDataPath(), userId, "data.yml"))
+                        .flatMap(ClashPreprocessor::process))
+                .flatMap(t -> ServerResponse.ok()
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .headers(h -> h.setContentDispositionFormData("attachment", t.getT1().getUsername() + ".yml"))
+                        .body(Mono.just(t.getT2()), String.class))
                 .onErrorResume(IOException.class, th -> ResponseUtils.yamlError(404, "error_config_not_found", th))
                 .onErrorResume(YAMLException.class, th -> ResponseUtils.yamlError(403, "error_invalid_config", th))
                 .onErrorResume(DispatcherException.class, th -> ResponseUtils.yamlError(403, "error_invalid_dispatcher", th))
