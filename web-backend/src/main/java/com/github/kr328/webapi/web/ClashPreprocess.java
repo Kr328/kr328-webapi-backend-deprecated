@@ -41,10 +41,10 @@ public class ClashPreprocess {
         String secret = request.pathVariable("secret");
 
         if (!PATTERN_ID.matcher(userId).matches() || !PATTERN_SECRET.matcher(secret).matches())
-            return ResponseUtils.yamlError(400, "error_invalid_id_or_secret");
+            return ResponseUtils.error(400, "error_invalid_id_or_secret");
 
         if (limiter.note(userId))
-            return ResponseUtils.yamlError(400, "error_burst");
+            return ResponseUtils.error(400, "error_burst");
 
         return FileUtils.readLines(Paths.get(externalConfigure.getDataPath(), userId, "metadata.json"))
                 .map(s -> JSONObject.parseObject(s, MetadataModel.class))
@@ -56,14 +56,14 @@ public class ClashPreprocess {
                         .contentType(MediaType.TEXT_PLAIN)
                         .headers(h -> h.setContentDispositionFormData("attachment", t.getT1().getUsername() + ".yml"))
                         .body(Mono.just(t.getT2()), String.class))
-                .onErrorResume(IOException.class, th -> ResponseUtils.yamlError(404, "error_config_not_found", th))
-                .onErrorResume(YAMLException.class, th -> ResponseUtils.yamlError(403, "error_invalid_config", th))
-                .onErrorResume(DispatcherException.class, th -> ResponseUtils.yamlError(403, "error_invalid_dispatcher", th))
-                .onErrorResume(PreprocessorException.class, th -> ResponseUtils.yamlError(403, "error_invalid_preprocessor", th))
-                .onErrorResume(ProxySourceException.class, th -> ResponseUtils.yamlError(403, "error_invalid_proxy_source", th))
-                .onErrorResume(RuleSetException.class, th -> ResponseUtils.yamlError(403, "error_invalid_rule_set", th))
-                .onErrorResume(WebClientException.class, th -> ResponseUtils.yamlError(403, "error_download_from_upstream_failure", th))
-                .onErrorResume(throwable -> ResponseUtils.yamlError(403, "error_unknown", throwable));
+                .onErrorResume(IOException.class, th -> ResponseUtils.error(404, "error_config_not_found", th))
+                .onErrorResume(YAMLException.class, th -> ResponseUtils.error(403, "error_invalid_config", th))
+                .onErrorResume(DispatcherException.class, th -> ResponseUtils.error(403, "error_invalid_dispatcher", th))
+                .onErrorResume(PreprocessorException.class, th -> ResponseUtils.error(403, "error_invalid_preprocessor", th))
+                .onErrorResume(ProxySourceException.class, th -> ResponseUtils.error(403, "error_invalid_proxy_source", th))
+                .onErrorResume(RuleSetException.class, th -> ResponseUtils.error(403, "error_invalid_rule_set", th))
+                .onErrorResume(WebClientException.class, th -> ResponseUtils.error(403, "error_download_from_upstream_failure", th))
+                .onErrorResume(throwable -> ResponseUtils.error(403, "error_unknown", ResponseUtils.log(ClashPreprocess.class, throwable)));
     }
 
     @Data

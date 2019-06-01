@@ -30,7 +30,7 @@ public class ProxyLoader {
                         .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
                         .map(RootUtils::loadClashRoot)
                         .flatMapIterable(ClashRoot::getProxy)
-                        .switchIfEmpty(Mono.error(() -> new ProxySourceException("download from " + url + " failure")));
+                        .switchIfEmpty(Mono.error(() -> new ProxySourceException("Load proxies from " + url + " failure")));
             case "plain":
                 if (source.getData() == null)
                     return Flux.error(new ProxySourceException("Empty data"));

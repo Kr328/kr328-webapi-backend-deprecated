@@ -11,47 +11,44 @@ public class ProxyGroupDispatchLoader {
     private static final Pattern PATTERN_MATCHES_ANY = Pattern.compile(".*");
     private static final Pattern PATTERN_MATCHES_NONE = Pattern.compile("");
 
-    public static List<Metadata> load(Collection<ProxyGroupDispatch> dispatches) {
-        ArrayList<Metadata> result = new ArrayList<>();
+    public static List<ProxyGroupData> load(Collection<ProxyGroupDispatch> dispatches) {
+        ArrayList<ProxyGroupData> result = new ArrayList<>();
 
         for (ProxyGroupDispatch dispatch : dispatches) {
-            Metadata metadata = new Metadata();
+            ProxyGroupData proxyGroupData = new ProxyGroupData();
 
-            metadata.dispatch = dispatch;
-            metadata.whitePattern = Optional.ofNullable(dispatch.getProxiesFilters())
+            proxyGroupData.dispatch = dispatch;
+            proxyGroupData.whitePattern = Optional.ofNullable(dispatch.getProxiesFilters())
                     .map(ProxyGroupDispatch.ProxiesFilters::getWhiteRegex)
                     .map(Pattern::compile).orElse(PATTERN_MATCHES_ANY);
-            metadata.blackPattern = Optional.ofNullable(dispatch.getProxiesFilters())
+            proxyGroupData.blackPattern = Optional.ofNullable(dispatch.getProxiesFilters())
                     .map(ProxyGroupDispatch.ProxiesFilters::getBlackRegex)
                     .map(Pattern::compile).orElse(PATTERN_MATCHES_NONE);
-            metadata.proxies.addAll(Optional.ofNullable(dispatch.getFlatProxies()).orElse(Collections.emptyList()));
+            proxyGroupData.proxies.addAll(Optional.ofNullable(dispatch.getFlatProxies()).orElse(Collections.emptyList()));
 
-            result.add(metadata);
+            result.add(proxyGroupData);
         }
 
         return result;
     }
 
-    public static Flux<LinkedHashMap<String, Object>> buildProxyGroups(List<Metadata> metadata) {
-        return Flux.fromIterable(metadata)
-                .map(m -> {
-                    LinkedHashMap<String, Object> r = new LinkedHashMap<>();
-
-                    Optional.ofNullable(m.dispatch.getName()).ifPresent(n -> r.put("name", n));
-                    Optional.ofNullable(m.dispatch.getType()).ifPresent(t -> r.put("type", t));
-                    Optional.ofNullable(m.dispatch.getUrl()).ifPresent(u -> r.put("url", u));
-                    if (m.dispatch.getInterval() != -1) r.put("interval", m.dispatch.getInterval());
-                    r.put("proxies", m.proxies);
-
-                    return r;
-                });
-    }
-
     @Data
-    public static class Metadata {
+    public static class ProxyGroupData {
         private ProxyGroupDispatch dispatch;
         private Pattern whitePattern = PATTERN_MATCHES_ANY;
         private Pattern blackPattern = PATTERN_MATCHES_NONE;
         private ArrayList<String> proxies = new ArrayList<>();
+
+        public LinkedHashMap<String, Object> toMap() {
+            LinkedHashMap<String, Object> r = new LinkedHashMap<>();
+
+            Optional.ofNullable(dispatch.getName()).ifPresent(n -> r.put("name", n));
+            Optional.ofNullable(dispatch.getType()).ifPresent(t -> r.put("type", t));
+            Optional.ofNullable(dispatch.getUrl()).ifPresent(u -> r.put("url", u));
+            if (dispatch.getInterval() != -1) r.put("interval", dispatch.getInterval());
+            r.put("proxies", proxies);
+
+            return r;
+        }
     }
 }
