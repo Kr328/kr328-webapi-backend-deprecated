@@ -20,10 +20,10 @@ public class ProxyGroupDispatchLoader {
             proxyGroupData.dispatch = dispatch;
             proxyGroupData.whitePattern = Optional.ofNullable(dispatch.getProxiesFilters())
                     .map(ProxyGroupDispatch.ProxiesFilters::getWhiteRegex)
-                    .map(Pattern::compile).orElse(PATTERN_MATCHES_ANY);
+                    .map(Pattern::compile).orElse(PATTERN_MATCHES_NONE);
             proxyGroupData.blackPattern = Optional.ofNullable(dispatch.getProxiesFilters())
                     .map(ProxyGroupDispatch.ProxiesFilters::getBlackRegex)
-                    .map(Pattern::compile).orElse(PATTERN_MATCHES_NONE);
+                    .map(Pattern::compile).orElse(PATTERN_MATCHES_ANY);
             proxyGroupData.proxies.addAll(Optional.ofNullable(dispatch.getFlatProxies()).orElse(Collections.emptyList()));
 
             result.add(proxyGroupData);
@@ -35,8 +35,8 @@ public class ProxyGroupDispatchLoader {
     @Data
     public static class ProxyGroupData {
         private ProxyGroupDispatch dispatch;
-        private Pattern whitePattern = PATTERN_MATCHES_ANY;
-        private Pattern blackPattern = PATTERN_MATCHES_NONE;
+        private Pattern whitePattern = PATTERN_MATCHES_NONE;
+        private Pattern blackPattern = PATTERN_MATCHES_ANY;
         private ArrayList<String> proxies = new ArrayList<>();
 
         public LinkedHashMap<String, Object> toMap() {

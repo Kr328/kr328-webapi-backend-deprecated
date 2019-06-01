@@ -7,20 +7,18 @@ import com.github.kr328.webapi.api.clash.exceptions.RuleSetException;
 import com.github.kr328.webapi.api.clash.model.ClashPreprocessorRoot;
 import com.github.kr328.webapi.api.clash.model.Preprocessor;
 import com.github.kr328.webapi.api.clash.model.Proxy;
-import com.github.kr328.webapi.api.clash.model.RuleSet;
 import com.github.kr328.webapi.api.clash.utils.ProxyGroupDispatchLoader;
 import com.github.kr328.webapi.api.clash.utils.ProxyGroupDispatchLoader.ProxyGroupData;
 import com.github.kr328.webapi.api.clash.utils.ProxyLoader;
 import com.github.kr328.webapi.api.clash.utils.RootUtils;
 import com.github.kr328.webapi.api.clash.utils.RuleSetLoader;
-import com.github.kr328.webapi.api.subscriptions.proxy.data.ProxyData;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ClashPreprocessor {
     public static Mono<String> process(String data) {
@@ -28,7 +26,7 @@ public class ClashPreprocessor {
 
         return Mono.just(new LinkedHashMap<String, Object>())
                 // check preprocessor version
-                .filter(l -> Optional.ofNullable(root.getPreprocessor()).map(Preprocessor::getVersion).orElse(-1) == 1 )
+                .filter(l -> Optional.ofNullable(root.getPreprocessor()).map(Preprocessor::getVersion).orElse(-1) == 1)
                 .switchIfEmpty(Mono.error(new PreprocessorException("Invalid preprocessor config version")))
                 // load and put clash general
                 .zipWith(Mono.justOrEmpty(root.getClashGeneral()))

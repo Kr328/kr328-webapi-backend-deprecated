@@ -2,6 +2,7 @@ package com.github.kr328.webapi.tools;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.yaml.snakeyaml.Yaml;
@@ -20,7 +21,7 @@ public class ResponseUtils {
                 Mono.just(new Yaml(new Representer() {{
                     addClassTag(ErrorModel.class, Tag.MAP);
                 }}).dumpAsMap(Collections.singletonMap("error", new ErrorModel(code,
-                                Optional.ofNullable(throwable).map(Throwable::toString).orElse("error_unknown"))))), String.class));
+                                Optional.ofNullable(throwable).map(ResponseUtils::castString).orElse("error_unknown"))))), String.class));
     }
 
     public static Mono<ServerResponse> error(int httpCode, String code) {
@@ -35,6 +36,10 @@ public class ResponseUtils {
                         () -> logger.error("Unexpected empty throwable"));
 
         return throwable;
+    }
+
+    private static String castString(@NonNull Throwable throwable) {
+        return throwable.getClass().getSimpleName() + ": " + Optional.ofNullable(throwable.getMessage()).orElse("");
     }
 
     @Data
