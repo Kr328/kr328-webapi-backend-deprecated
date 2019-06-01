@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Controller
@@ -64,7 +63,7 @@ public class ClashPreprocess {
                 .onErrorResume(ProxySourceException.class, th -> ResponseUtils.yamlError(403, "error_invalid_proxy_source", th))
                 .onErrorResume(RuleSetException.class, th -> ResponseUtils.yamlError(403, "error_invalid_rule_set", th))
                 .onErrorResume(WebClientException.class, th -> ResponseUtils.yamlError(403, "error_download_from_upstream_failure", th))
-                .onErrorResume(throwable -> ResponseUtils.yamlError(403,"error_unknown", throwable));
+                .onErrorResume(throwable -> ResponseUtils.yamlError(403, "error_unknown", throwable));
     }
 
     @Data
