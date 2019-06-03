@@ -37,7 +37,7 @@ public class RuleSetLoader {
                 .uri(url)
                 .header("Referer", "https://webapi.kr328.app/preclash")
                 .exchange()
-                .timeout(Duration.ofSeconds(30))
+                .timeout(Duration.ofSeconds(30), Mono.error(new RuleSetException("Load RuleSet from " + url + " timeout")))
                 .filter(clientResponse -> clientResponse.statusCode().is2xxSuccessful())
                 .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
                 .map(RootUtils::loadClashRoot)
@@ -46,7 +46,7 @@ public class RuleSetLoader {
                 .filter(ss -> ss.length > 1)
                 .doOnNext(ss -> Optional.ofNullable(target.get(ss[ss.length - 1])).ifPresent(m -> ss[ss.length - 1] = m))
                 .map(ss -> String.join(",", ss))
-                .switchIfEmpty(Flux.error(new RuleSetException("Load rule set from " + url + " failure")))
+                .switchIfEmpty(Flux.error(new RuleSetException("Load RuleSet from " + url + " failure")))
                 .collectList()
                 .map(l -> new RuleSetData(set.getName(), l));
     }
