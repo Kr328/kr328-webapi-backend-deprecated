@@ -25,7 +25,7 @@ public class ProxyLoader {
                         .uri(url)
                         .header("Referer", "https://webapi.kr328.app/preclash")
                         .exchange()
-                        .timeout(Duration.ofSeconds(30))
+                        .timeout(Duration.ofSeconds(30), Mono.error(new ProxySourceException("Load proxies from " + url + " timeout")))
                         .filter(c -> c.statusCode().is2xxSuccessful())
                         .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
                         .map(RootUtils::loadClashRoot)
