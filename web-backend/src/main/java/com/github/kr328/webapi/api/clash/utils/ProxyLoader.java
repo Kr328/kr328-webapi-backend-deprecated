@@ -8,7 +8,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.management.monitor.Monitor;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -26,12 +25,12 @@ public class ProxyLoader {
                         .uri(url)
                         .header("Referer", "https://webapi.kr328.app/preclash")
                         .exchange()
-                        .timeout(Duration.ofSeconds(30))
+                        .timeout(Duration.ofSeconds(30), Mono.error(new ProxySourceException("Load proxies from " + url + " timeout")))
                         .filter(c -> c.statusCode().is2xxSuccessful())
                         .flatMap(clientResponse -> clientResponse.bodyToMono(String.class))
                         .map(RootUtils::loadClashRoot)
                         .flatMapIterable(ClashRoot::getProxy)
-                        .switchIfEmpty(Mono.error(() -> new ProxySourceException("download from " + url + " failure")));
+                        .switchIfEmpty(Mono.error(() -> new ProxySourceException("Load proxies from " + url + " failure")));
             case "plain":
                 if (source.getData() == null)
                     return Flux.error(new ProxySourceException("Empty data"));
