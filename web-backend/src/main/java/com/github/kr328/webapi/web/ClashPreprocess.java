@@ -2,7 +2,7 @@ package com.github.kr328.webapi.web;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.kr328.webapi.WebApiApplication;
-import com.github.kr328.webapi.api.ClashPreprocessor;
+import com.github.kr328.webapi.api.clash.ClashPreprocessor;
 import com.github.kr328.webapi.api.clash.exceptions.DispatcherException;
 import com.github.kr328.webapi.api.clash.exceptions.PreprocessorException;
 import com.github.kr328.webapi.api.clash.exceptions.ProxySourceException;

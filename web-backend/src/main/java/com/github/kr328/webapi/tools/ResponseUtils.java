@@ -21,7 +21,7 @@ public class ResponseUtils {
                 Mono.just(new Yaml(new Representer() {{
                     addClassTag(ErrorModel.class, Tag.MAP);
                 }}).dumpAsMap(Collections.singletonMap("error", new ErrorModel(code,
-                                Optional.ofNullable(throwable).map(ResponseUtils::castString).orElse("error_unknown"))))), String.class));
+                        Optional.ofNullable(throwable).map(ResponseUtils::castString).orElse("error_unknown"))))), String.class));
     }
 
     public static Mono<ServerResponse> error(int httpCode, String code) {

@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.all;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @SpringBootApplication
@@ -21,7 +22,7 @@ public class WebApiApplication {
     @Bean
     public RouterFunction<ServerResponse> routes(ApiControllers controllers) {
         return route()
-                .add(route(path("/surge2ssd"), controllers.getSurge2ShadowSocks()::process))
+                .add(route(GET("/surge2ssd"), controllers.getSurge2ShadowSocks()::process))
                 .add(route(GET("/preclash/{userId}/{secret}"), controllers.getClashPreprocess()::handle))
                 .add(route(all(), request -> ServerResponse.notFound().build()))
                 .build();

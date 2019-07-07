@@ -10,13 +10,14 @@ buildscript {
 	}
 }
 
+apply plugin: 'kotlin'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.github.kr328'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.1'
 sourceCompatibility = '11'
 targetCompatibility = '11'
 
@@ -27,8 +28,15 @@ repositories {
 }
 
 dependencies {
-	compileOnly 'org.projectlombok:lombok:1.18.6'
+	api 'org.projectlombok:lombok:1.18.6'
+	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.alibaba:fastjson:1.2.54'
 	implementation 'org.yaml:snakeyaml:1.25-SNAPSHOT'
+}
+
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
 }

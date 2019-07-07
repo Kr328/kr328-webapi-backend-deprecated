@@ -1,4 +1,4 @@
-package com.github.kr328.webapi.api;
+package com.github.kr328.webapi.api.clash;
 
 import com.github.kr328.webapi.api.clash.exceptions.DispatcherException;
 import com.github.kr328.webapi.api.clash.exceptions.PreprocessorException;
