@@ -86,13 +86,14 @@ fun parseSurge(body: String): Surge {
 }
 
 private fun parseShadowsocks(data: List<String>): Shadowsocks {
-    var plugin: ShadowsocksPlugin? = null
+    var plugin: Pair<String, String>? = null
+
     val extras: MutableMap<String, String> = mutableMapOf()
 
     for (element in data.subList(7, data.size).distinct()) {
         when {
             element.startsWith("obfs=") or element.startsWith("obfs-host=") ->
-                plugin = plugin?.apply { this.pluginOptions += ";$element" } ?: ShadowsocksPlugin("obfs-local", element)
+                plugin = plugin?.apply { this.copy(second = "$second;$element") } ?: Pair("obfs-local", "$element;")
             element.contains('=') ->
                 element.split('=', limit = 2).let { extras[it[0]] = it[1] }
             else ->
@@ -101,5 +102,5 @@ private fun parseShadowsocks(data: List<String>): Shadowsocks {
     }
 
     return Shadowsocks(remark = data[0], host = data[2], port = data[3].toInt(), method = data[4], password = data[5],
-            plugin = plugin, extras = extras)
+            plugin = plugin?.let(::ShadowsocksPlugin) , extras = extras)
 }

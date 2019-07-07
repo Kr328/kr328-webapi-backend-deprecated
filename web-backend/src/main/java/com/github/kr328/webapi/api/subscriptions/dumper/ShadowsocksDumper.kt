@@ -13,6 +13,10 @@ fun dumpShadowsocksD(shadowsocksD: ShadowsocksD): String {
     root["port"] = shadowsocksD.defaultShadowsocks.port
     root["encryption"] = shadowsocksD.defaultShadowsocks.method
     root["password"] = shadowsocksD.defaultShadowsocks.password
+    shadowsocksD.defaultShadowsocks.plugin?.let {
+        root["plugin"] = it.plugin
+        root["plugin_opts"] = it.pluginOptions
+    }
 
     shadowsocksD.expires?.let { root["expiry"] = it }
     shadowsocksD.trafficTotal?.let { root["traffic_total"] = castByteToGiByte(it) }
