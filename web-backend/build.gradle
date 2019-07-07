@@ -31,6 +31,7 @@ dependencies {
 	api 'org.projectlombok:lombok:1.18.6'
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation "org.jetbrains.kotlin:kotlin-reflect"
+	implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'com.alibaba:fastjson:1.2.54'
 	implementation 'org.yaml:snakeyaml:1.25-SNAPSHOT'

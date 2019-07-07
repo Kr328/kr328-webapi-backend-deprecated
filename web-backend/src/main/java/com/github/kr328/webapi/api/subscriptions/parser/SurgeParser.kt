@@ -1,25 +1,23 @@
 package com.github.kr328.webapi.api.subscriptions.parser
 
 import com.github.kr328.webapi.api.subscriptions.model.*
-import java.util.stream.Collectors
 import java.util.stream.Stream
-import kotlin.streams.toList
 
 private enum class Status {
     EMPTY, STATUS_GENERAL, STATUS_PROXY, STATUS_PROXY_GROUP, STATUS_RULE
 }
 
 private val REGEX_GENERAL_SPLIT = Regex("(\\s*=\\s*)")
-private val REGEX_PROXY_NAME_SPLIT = Regex("(\\s*=\\s*)")
-private val REGEX_PROXY_ARGS_SPLIT = Regex("(\\s*,\\s*)")
-private val REGEX_PROXY_GROUP_SPLIT = Regex("(\\s*[=,]\\s*)")
+private val REGEX_NAME_SPLIT = Regex("(\\s*=\\s*)")
+private val REGEX_ARGS_SPLIT = Regex("(\\s*,\\s*)")
 
+@Suppress("UNCHECKED_CAST")
 fun parseSurge(body: String): Surge {
     var status: Status = Status.EMPTY
 
     val general: MutableMap<String, String> = mutableMapOf()
     val proxy: MutableList<Proxy> = mutableListOf()
-    val proxyGroup: MutableMap<String, List<String>> = mutableMapOf()
+    val proxyGroup: MutableMap<String, ProxyGroup> = mutableMapOf()
     val rule: MutableList<Rule> = mutableListOf()
 
     loop@ for (line in body.split('\r', '\n').map(String::trim)) {
@@ -45,9 +43,9 @@ fun parseSurge(body: String): Surge {
                     }
                     Status.STATUS_PROXY -> {
                         Stream.of(line)
-                                .map { it.split(REGEX_PROXY_NAME_SPLIT, 2) }
+                                .map { it.split(REGEX_NAME_SPLIT, 2) }
                                 .filter { it.size >= 2 }
-                                .map { listOf(it[0]) + it[1].split(REGEX_PROXY_ARGS_SPLIT) }
+                                .map { listOf(it[0]) + it[1].split(REGEX_ARGS_SPLIT) }
                                 .flatMap {
                                     when {
                                         it[1] == "direct" -> Stream.of(CommonProxy(it[0], "direct"))
@@ -65,9 +63,29 @@ fun parseSurge(body: String): Surge {
                     }
                     Status.STATUS_PROXY_GROUP -> {
                         Stream.of(line)
-                                .map { it.split(REGEX_PROXY_GROUP_SPLIT) }
-                                .filter { it.size >= 2 }
-                                .forEach { proxyGroup[it[0]] = it.subList(1, it.size) }
+                                .map { it.split(REGEX_NAME_SPLIT, 2) }
+                                .filter { it.size == 2 }
+                                .map { listOf(it[0]) + it[1].split(REGEX_ARGS_SPLIT) }
+                                .forEach {
+                                    proxyGroup[it[0]] = when ( it[1] ) {
+                                        "select" -> ProxyGroup(ProxyGroup.TypeSelect(), it.subList(2, it.size))
+                                        "url-test" ->
+                                            parseProxyGroupArgs(it.subList(2, it.size)).let {
+                                                m -> ProxyGroup(ProxyGroup.TypeUrlTest(m["url"].toString(),
+                                                    m["interval"]?.toString()?.toLong(),
+                                                    m["tolerance"]?.toString()?.toLong(),
+                                                    m["timeout"]?.toString()?.toLong()),
+                                                    m["proxies"] as List<String>)
+                                            }
+                                        "fallback" ->
+                                            parseProxyGroupArgs(it.subList(2, it.size)).let {
+                                                m -> ProxyGroup(ProxyGroup.TypeFallback(m["url"].toString(),
+                                                    m["interval"]?.toString()?.toLong()),
+                                                    m["proxies"] as List<String>)
+                                            }
+                                        else -> ProxyGroup(ProxyGroup.TypeUnknown(it[1]), it.subList(2, it.size))
+                                    }
+                                }
                     }
                     Status.STATUS_RULE -> {
                         Stream.of(line)
@@ -103,4 +121,20 @@ private fun parseShadowsocks(data: List<String>): Shadowsocks {
 
     return Shadowsocks(remark = data[0], host = data[2], port = data[3].toInt(), method = data[4], password = data[5],
             plugin = plugin?.let(::ShadowsocksPlugin) , extras = extras)
+}
+
+private fun parseProxyGroupArgs(data: List<String>): Map<String, Any> {
+    val result: MutableMap<String, Any> = mutableMapOf()
+    val proxies: MutableList<String> = mutableListOf()
+
+    for ( e in data ) {
+        if ( e.contains('=') )
+            e.split(REGEX_NAME_SPLIT, limit = 2).let { result[it[0]] = it[1] }
+        else
+            proxies.add(e)
+    }
+
+    result["proxies"] = proxies
+
+    return result
 }
