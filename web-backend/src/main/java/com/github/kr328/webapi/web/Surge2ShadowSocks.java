@@ -29,10 +29,11 @@ public class Surge2ShadowSocks {
 
         return WebClient.create()
                 .get()
-                .uri(url.get())
-                .headers(httpHeaders -> httpHeaders.addAll(request.headers().asHttpHeaders()))
+                .uri(decodedUrl)
+                //.headers(httpHeaders -> httpHeaders.addAll(request.headers().asHttpHeaders()))
                 .exchange()
                 .timeout(Duration.ofMinutes(1))
+                .filter(response -> response.statusCode().is2xxSuccessful())
                 .zipWhen(clientResponse -> clientResponse.bodyToMono(String.class))
                 .map(t -> Surge2ShadowsocksKt.surge2Shadowsocks(t.getT2(), name.orElse(null), t.getT1().headers().asHttpHeaders()))
                 .flatMap(s -> ServerResponse.ok().body(Mono.just(s), String.class))

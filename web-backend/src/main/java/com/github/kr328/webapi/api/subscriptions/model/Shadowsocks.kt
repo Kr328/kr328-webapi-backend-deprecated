@@ -3,7 +3,7 @@ package com.github.kr328.webapi.api.subscriptions.model
 data class Shadowsocks(val remark: String, val host: String, val port: Int,
                        val password: String, val method: String,
                        val plugin: ShadowsocksPlugin? = null,
-                       val extra: Map<String, Any> = mutableMapOf()) : Proxy {
+                       val extras: Map<String, Any> = mutableMapOf()) : Proxy {
     companion object {
         const val TYPE: String = "TYPE_SHADOWSOCKS"
 

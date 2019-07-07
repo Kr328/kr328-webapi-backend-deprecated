@@ -29,7 +29,7 @@ private fun castByteToGiByte(data: Long): Float = (data / 1024 / 1024 / 1024.0f)
 private fun dumpSingleServer(shadowsocks: Shadowsocks): JSONObject {
     val result = JSONObject()
 
-    result["remark"] = shadowsocks.remark
+    result["remarks"] = shadowsocks.remark
     result["server"] = shadowsocks.host
     result["port"] = shadowsocks.port
     result["encryption"] = shadowsocks.method
@@ -40,8 +40,8 @@ private fun dumpSingleServer(shadowsocks: Shadowsocks): JSONObject {
         result["plugin_options"] = it.pluginOptions
     }
 
-    shadowsocks.extra["id"]?.let { result["id"] = it }
-    shadowsocks.extra["ratio"]?.let { result["ratio"] = it }
+    shadowsocks.extras["id"]?.let { result["id"] = it }
+    shadowsocks.extras["ratio"]?.let { result["ratio"] = it }
 
     return result
 }
