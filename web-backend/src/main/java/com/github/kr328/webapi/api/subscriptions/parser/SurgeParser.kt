@@ -113,13 +113,13 @@ private fun parseShadowsocks(data: List<String>): Shadowsocks {
             element.startsWith("obfs=") or element.startsWith("obfs-host=") ->
                 plugin = plugin?.apply { this.copy(second = "$second;$element") } ?: Pair("obfs-local", "$element;")
             element.contains('=') ->
-                element.split('=', limit = 2).let { extras[it[0]] = it[1] }
+                element.split(REGEX_NAME_SPLIT, limit = 2).let { extras[it[0]] = it[1] }
             else ->
                 extras[element] = "true"
         }
     }
 
-    return Shadowsocks(remark = data[0], host = data[2], port = data[3].toInt(), method = data[4], password = data[5],
+    return Shadowsocks(remarks = data[0], host = data[2], port = data[3].toInt(), method = data[4], password = data[5],
             plugin = plugin?.let(::ShadowsocksPlugin) , extras = extras)
 }
 
