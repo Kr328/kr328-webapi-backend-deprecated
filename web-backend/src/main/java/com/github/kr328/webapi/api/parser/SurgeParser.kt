@@ -1,6 +1,6 @@
-package com.github.kr328.webapi.api.subscriptions.parser
+package com.github.kr328.webapi.api.parser
 
-import com.github.kr328.webapi.api.subscriptions.model.*
+import com.github.kr328.webapi.api.model.*
 import java.util.stream.Stream
 
 private enum class Status {

@@ -20,7 +20,7 @@ class WebApiApplication {
     fun routes(components: Components): RouterFunction<ServerResponse> {
         return router {
             GET("/surge2ssd") { components.surge2ShadowSocks.process(it) }
-            GET("/preclash/{userId}/{secret}") { components.clashPreprocess.process(it) }
+            GET("/preclash/{userId}/{secret}") { components.clashPreprocessor.process(it) }
         }.andRoute({ true }, { ServerResponse.notFound().build() })
     }
 }

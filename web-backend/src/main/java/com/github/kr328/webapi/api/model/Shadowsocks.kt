@@ -1,9 +1,12 @@
-package com.github.kr328.webapi.api.subscriptions.model
+package com.github.kr328.webapi.api.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Shadowsocks(val remarks: String, val host: String, val port: Int,
                        val password: String, val method: String,
                        val plugin: ShadowsocksPlugin? = null,
-                       val extras: Map<String, Any> = mutableMapOf()) : Proxy {
+                       val extras: Map<String, String> = mutableMapOf()) : Proxy {
     companion object {
         const val TYPE: String = "TYPE_SHADOWSOCKS"
 

@@ -1,9 +1,7 @@
 package com.github.kr328.webapi.web
 
-import com.github.kr328.webapi.api.subscriptions.surge2Shadowsocks
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Controller
-import org.springframework.stereotype.Service
+import com.github.kr328.webapi.api.*
+import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -27,10 +25,37 @@ class Surge2ShadowSocks {
                 .timeout(Duration.ofMinutes(1))
                 .filter { response -> response.statusCode().is2xxSuccessful }
                 .zipWhen { clientResponse -> clientResponse.bodyToMono(String::class.java) }
-                .map { t -> surge2Shadowsocks(t.t2, name.orElse(null), t.t1.headers().asHttpHeaders()) }
+                .map { t -> surge2Shadowsocks(t.t2, parseExtras(t.t1.headers().asHttpHeaders(), name.get())) }
                 .flatMap { s -> ServerResponse.ok().body(Mono.just(s), String::class.java) }
                 .switchIfEmpty(Mono.error(Exception("Empty surge config")))
                 .onErrorResume { throwable -> ServerResponse.badRequest().body(Mono.just(throwable.toString()), String::class.java) }
+    }
+
+    private fun parseExtras(headers: HttpHeaders, name: String?): Map<String, String> {
+        var trafficUsed: Long = 0
+        var trafficTotal: Long = 0
+
+        for (line in headers["Subscription-UserInfo"]?.flatMap { it.split(REGEX_USER_INFO_SPLIT) } ?: emptyList()) {
+            when {
+                line.startsWith("upload=", ignoreCase = true) ->
+                    trafficUsed += line.removePrefix("upload=").toLong()
+                line.startsWith("download=", ignoreCase = true) ->
+                    trafficUsed += line.removePrefix("download=").toLong()
+                line.startsWith("total=", ignoreCase = true) ->
+                    trafficTotal += line.removePrefix("total=").toLong()
+            }
+        }
+
+        return mapOf(
+                EXTRA_SHADOWSOCKS_D_PROVIDER_NAME to (name ?: headers.contentDisposition.filename?.replace(REGEX_SURGE_CONFIG_SUFFIX, "") ?: "Unlabeled"),
+                EXTRA_SHADOWSOCKS_D_TRAFFIC_USED to trafficUsed.toString(),
+                EXTRA_SHADOWSOCKS_D_TRAFFIC_TOTAL to trafficTotal.toString()
+        )
+    }
+
+    companion object {
+        private val REGEX_USER_INFO_SPLIT = Regex("[;\\s]")
+        private val REGEX_SURGE_CONFIG_SUFFIX = Regex("\\.(txt|conf)$")
     }
 }
 

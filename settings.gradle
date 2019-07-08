@@ -1,4 +1,4 @@
 rootProject.name = 'webapi'
 
 include ':web-backend'
-include ':telegram-bot'
+//include ':telegram-bot'

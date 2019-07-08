@@ -1,9 +1,9 @@
-package com.github.kr328.webapi.api.subscriptions.dumper
+package com.github.kr328.webapi.api.dumper
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.github.kr328.webapi.api.subscriptions.model.Shadowsocks
-import com.github.kr328.webapi.api.subscriptions.model.ShadowsocksD
+import com.github.kr328.webapi.api.model.Shadowsocks
+import com.github.kr328.webapi.api.model.ShadowsocksD
 import java.util.*
 
 fun dumpShadowsocksD(shadowsocksD: ShadowsocksD): String {
@@ -21,7 +21,7 @@ fun dumpShadowsocksD(shadowsocksD: ShadowsocksD): String {
     shadowsocksD.expires?.let { root["expiry"] = it }
     shadowsocksD.trafficTotal?.let { root["traffic_total"] = castByteToGiByte(it) }
     shadowsocksD.trafficUsed?.let { root["traffic_used"] = castByteToGiByte(it) }
-    shadowsocksD.url?.let { root["url"] = it.toString() }
+    shadowsocksD.url?.let { root["url"] = it }
 
     root["servers"] = JSONArray(shadowsocksD.servers.map(::dumpSingleServer))
 
