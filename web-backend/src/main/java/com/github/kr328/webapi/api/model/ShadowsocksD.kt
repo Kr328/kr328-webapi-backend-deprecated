@@ -13,15 +13,15 @@ import java.util.*
 @Serializable
 data class ShadowsocksD(@SerialName("airport")        val provider: String,
                         @SerialName("servers")        val servers: List<Shadowsocks>,
-                        @SerialName("traffic_used")   val trafficUsed: Long?,
-                        @SerialName("traffic_total")  val trafficTotal: Long?,
-                        @SerialName("expiry")         val expires: Date?,
+                        @SerialName("traffic_used")   val trafficUsed: Long? = null,
+                        @SerialName("traffic_total")  val trafficTotal: Long? = null,
+                        @SerialName("expiry")         val expires: Date? = null,
                         @SerialName("url")            val url: URL? = null,
                         @SerialName("encryption")     val method: String,
                         @SerialName("port")           val port: Int,
                         @SerialName("password")       val password: String,
-                        @SerialName("plugin")         val plugin: String?,
-                        @SerialName("plugin_options") val pluginOptions: String?) : Config {
+                        @SerialName("plugin")         val plugin: String? = null,
+                        @SerialName("plugin_options") val pluginOptions: String? = null) : Config {
     constructor(provider: String,
                 servers: List<Shadowsocks>,
                 trafficUsed: Long?,
@@ -89,7 +89,7 @@ data class ShadowsocksD(@SerialName("airport")        val provider: String,
                 obj.extras[EXTRA_PROXY_ID]?.let {
                     encodeIntElement(descriptor, 8, it.toInt())
                 }
-                
+
                 endStructure(descriptor)
             }
         }

@@ -118,7 +118,7 @@ class SurgeSerializer {
         for (element in data.subList(7, data.size).distinct()) {
             when {
                 element.startsWith("obfs=") or element.startsWith("obfs-host=") ->
-                    plugin = plugin?.apply { this.copy(second = "$second;$element") } ?: Pair("obfs-local", "$element;")
+                    plugin = plugin?.run { this.copy(second = "$second;$element") } ?: Pair("obfs-local", element)
                 element.contains('=') ->
                     element.split(REGEX_NAME_SPLIT, limit = 2).let { extras[it[0]] = it[1] }
                 else ->

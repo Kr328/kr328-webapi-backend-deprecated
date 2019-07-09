@@ -34,25 +34,25 @@ class Surge2ShadowSocks {
                 .onErrorResume { throwable -> ServerResponse.badRequest().body(Mono.just(throwable.toString()), String::class.java) }
     }
 
-    private fun parseExtras(headers: HttpHeaders, name: String?): Map<String, String> {
-        var trafficUsed: Long = 0
-        var trafficTotal: Long = 0
+    private fun parseExtras(headers: HttpHeaders, name: String?): Map<String, String?> {
+        var trafficUsed: Long? = null
+        var trafficTotal: Long? = null
 
         for (line in headers["Subscription-UserInfo"]?.flatMap { it.split(REGEX_USER_INFO_SPLIT) } ?: emptyList()) {
             when {
                 line.startsWith("upload=", ignoreCase = true) ->
-                    trafficUsed += line.removePrefix("upload=").toLong()
+                    trafficUsed = line.removePrefix("upload=").toLong() + (trafficUsed ?: 0L)
                 line.startsWith("download=", ignoreCase = true) ->
-                    trafficUsed += line.removePrefix("download=").toLong()
+                    trafficUsed = line.removePrefix("download=").toLong() + (trafficUsed ?: 0L)
                 line.startsWith("total=", ignoreCase = true) ->
-                    trafficTotal += line.removePrefix("total=").toLong()
+                    trafficTotal = line.removePrefix("total=").toLong() + (trafficTotal ?: 0L)
             }
         }
 
         return mapOf(
                 EXTRA_SHADOWSOCKS_D_PROVIDER_NAME to (name ?: headers.contentDisposition.filename?.replace(REGEX_SURGE_CONFIG_SUFFIX, "") ?: "Unlabeled"),
-                EXTRA_SHADOWSOCKS_D_TRAFFIC_USED to trafficUsed.toString(),
-                EXTRA_SHADOWSOCKS_D_TRAFFIC_TOTAL to trafficTotal.toString()
+                EXTRA_SHADOWSOCKS_D_TRAFFIC_USED to trafficUsed?.toString(),
+                EXTRA_SHADOWSOCKS_D_TRAFFIC_TOTAL to trafficTotal?.toString()
         )
     }
 
