@@ -9,10 +9,10 @@ import kotlinx.serialization.json.JsonConfiguration
 import java.util.*
 
 class ShadowsocksSerializer {
-    private val json = Json(JsonConfiguration(encodeDefaults = false))
+    private val json = Json(JsonConfiguration.Stable.copy(encodeDefaults = false))
 
-    fun stringify(obj: ShadowsocksD): String = json.stringify(ShadowsocksD.serializer(), obj)
-            //"ssd://" + Base64.getUrlEncoder().encodeToString(.toByteArray())
+    fun stringify(obj: ShadowsocksD): String =
+            "ssd://" + Base64.getUrlEncoder().encodeToString(json.stringify(ShadowsocksD.serializer(), obj).toByteArray())
 
     fun parse(string: String): ShadowsocksD =
             json.parse(ShadowsocksD.serializer(), String(Base64.getDecoder().decode(string)))
