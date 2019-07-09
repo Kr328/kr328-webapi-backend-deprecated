@@ -1,6 +1,9 @@
 package com.github.kr328.webapi.web
 
-import com.github.kr328.webapi.api.*
+import com.github.kr328.webapi.api.EXTRA_SHADOWSOCKS_D_PROVIDER_NAME
+import com.github.kr328.webapi.api.EXTRA_SHADOWSOCKS_D_TRAFFIC_TOTAL
+import com.github.kr328.webapi.api.EXTRA_SHADOWSOCKS_D_TRAFFIC_USED
+import com.github.kr328.webapi.api.surge2Shadowsocks
 import org.springframework.http.HttpHeaders
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -25,7 +28,7 @@ class Surge2ShadowSocks {
                 .timeout(Duration.ofMinutes(1))
                 .filter { response -> response.statusCode().is2xxSuccessful }
                 .zipWhen { clientResponse -> clientResponse.bodyToMono(String::class.java) }
-                .map { t -> surge2Shadowsocks(t.t2, parseExtras(t.t1.headers().asHttpHeaders(), name.get())) }
+                .map { t -> surge2Shadowsocks(t.t2, parseExtras(t.t1.headers().asHttpHeaders(), name.orElse(null))) }
                 .flatMap { s -> ServerResponse.ok().body(Mono.just(s), String::class.java) }
                 .switchIfEmpty(Mono.error(Exception("Empty surge config")))
                 .onErrorResume { throwable -> ServerResponse.badRequest().body(Mono.just(throwable.toString()), String::class.java) }

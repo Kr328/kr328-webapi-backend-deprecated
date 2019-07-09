@@ -1,6 +1,5 @@
 package com.github.kr328.webapi.tools
 
-import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
 class BurstLimiter {

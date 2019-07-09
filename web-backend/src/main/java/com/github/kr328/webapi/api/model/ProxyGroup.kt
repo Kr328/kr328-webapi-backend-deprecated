@@ -1,8 +1,5 @@
 package com.github.kr328.webapi.api.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class ProxyGroup(val type: Type, val proxies: List<String>) {
     interface Type {
         fun getTypeName(): String

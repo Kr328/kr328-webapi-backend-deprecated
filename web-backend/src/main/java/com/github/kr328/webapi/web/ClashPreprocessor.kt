@@ -2,11 +2,8 @@ package com.github.kr328.webapi.web
 
 import com.charleskorn.kaml.Yaml
 import com.github.kr328.webapi.Global
-import com.github.kr328.webapi.api.clash.ClashPreprocessor
-import com.github.kr328.webapi.api.clash.exceptions.DispatcherException
-import com.github.kr328.webapi.api.clash.exceptions.PreprocessorException
-import com.github.kr328.webapi.api.clash.exceptions.ProxySourceException
-import com.github.kr328.webapi.api.clash.exceptions.RuleSetException
+import com.github.kr328.webapi.api.preprocessClashParse
+import com.github.kr328.webapi.api.preprocessClashProcess
 import com.github.kr328.webapi.tools.BurstLimiter
 import com.github.kr328.webapi.tools.fileLines
 import kotlinx.serialization.Serializable
@@ -17,7 +14,6 @@ import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.client.WebClientException
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
-import org.yaml.snakeyaml.error.YAMLException
 import reactor.core.publisher.Mono
 import reactor.util.Logger
 import reactor.util.Loggers
@@ -48,10 +44,10 @@ class ClashPreprocessor {
         return fileLines(Paths.get(Global.WEBAPI_DATA_PATH, userId, "metadata.json"))
                     .map { s -> Json(JsonConfiguration.Stable).parse(MetadataModel.serializer(), s) }
                     .filter { metadataModel -> metadataModel.secret == secret }
-                    .switchIfEmpty(Mono.error(FileNotFoundException()))
+                    .switchIfEmpty(Mono.error<MetadataModel>(FileNotFoundException()))
                     .zipWhen {
                         fileLines(Paths.get(Global.WEBAPI_DATA_PATH, userId, "data.yml"))
-                                .flatMap { ClashPreprocessor.process(it) }
+                                .map { preprocessClashParse(it) }.map { preprocessClashProcess(it.first, mapOf()) }
                     }
                     .flatMap { t ->
                         ServerResponse.ok()
@@ -62,11 +58,6 @@ class ClashPreprocessor {
                     .onErrorResume { throwable ->
                         when ( throwable ) {
                             is IOException -> error(HttpStatus.NOT_FOUND, "error_config_not_found", throwable)
-                            is YAMLException -> error(HttpStatus.FORBIDDEN, "error_invalid_config", throwable)
-                            is DispatcherException -> error(HttpStatus.FORBIDDEN, "error_invalid_dispatcher", throwable)
-                            is PreprocessorException -> error(HttpStatus.FORBIDDEN, "error_invalid_preprocessor", throwable)
-                            is ProxySourceException -> error(HttpStatus.FORBIDDEN, "error_invalid_proxy_source", throwable)
-                            is RuleSetException -> error(HttpStatus.FORBIDDEN, "error_invalid_rule_set", throwable)
                             is WebClientException -> error(HttpStatus.FORBIDDEN, "error_download_from_upstream_failure", throwable)
                             else -> {
                                 LOGGER.error("Unknown", throwable)

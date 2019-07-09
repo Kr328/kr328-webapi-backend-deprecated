@@ -1,8 +1,5 @@
 package com.github.kr328.webapi.api.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Rule(val matcher: String, val pattern: String, val target: String, val extra: List<String> = mutableListOf()) {
     companion object {
         const val MATCHER_DOMAIN_SUFFIX = "DOMAIN-SUFFIX"

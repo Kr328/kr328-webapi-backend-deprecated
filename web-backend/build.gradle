@@ -1,20 +1,23 @@
 buildscript {
 	ext {
 		springBootVersion = '2.1.2.RELEASE'
+		kotlin_version = '1.3.41'
 	}
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
 	}
 }
 
 apply plugin: 'kotlin'
 apply plugin: 'kotlinx-serialization'
+apply plugin: "kotlin-spring"
 apply plugin: 'application'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
 
 group = 'com.github.kr328'
 version = '2.0.0'
@@ -24,20 +27,19 @@ targetCompatibility = '11'
 repositories {
 	jcenter()
 	mavenCentral()
-	
-	maven { url "https://oss.sonatype.org/content/groups/public" }
+}
+
+startScripts {
+	mainClassName = "com.github.kr328.webapi.WebApiApplicationKt"
 }
 
 dependencies {
-	api 'org.projectlombok:lombok:1.18.6'
 	implementation 'org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.11.1'
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 	implementation "org.jetbrains.kotlin:kotlin-reflect"
 	implementation 'com.charleskorn.kaml:kaml:0.11.0'
 	implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'com.alibaba:fastjson:1.2.54'
-	implementation 'org.yaml:snakeyaml:1.25-SNAPSHOT'
 }
 
 compileKotlin {
